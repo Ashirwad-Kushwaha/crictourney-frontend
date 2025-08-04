@@ -5,27 +5,29 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 export default function Login() {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
     const login = async (e) => {
         e.preventDefault();
 
-        if (!username || !password) {
-            toast.error("Please fill in both username and password.");
+        if (!email || !password) {
+            toast.error("Please fill in both email and password.");
             return;
         }
 
         try {
-            const res = await userApi.post("/auth/login", { username, password });
+            const res = await userApi.post("/auth/login", null, {
+                params: { email, password }
+            });
             saveToken(res.data);
             const user = getUser();
             toast.success(`Welcome, ${user.sub}! You are logged in.`); // Success toast with username
-            if (user?.role === "ADMIN") navigate("/admin");
-            else navigate("/user");
+            if (user?.role === "ADMIN") navigate(`/admin?username=${user.sub}`);
+            else navigate(`/user?username=${user.sub}`);
         } catch (err) {
-            toast.error("Invalid username or password."); // Error toast
+            toast.error("Invalid email or password."); // Error toast
         }
     };
 
@@ -44,10 +46,10 @@ export default function Login() {
             <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
             <form onSubmit={login}>
                 <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-2 mb-2 border rounded"
                 />
                 <input

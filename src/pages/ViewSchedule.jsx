@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { schedulerApi } from "../services/api";
 import toast, { Toaster } from "react-hot-toast";
 import { getUser } from "../auth"; // Import getUser to check user role
+import { Box } from "@mui/material";
 
 export default function ViewSchedule() {
     const [schedule, setSchedule] = useState([]);
@@ -38,7 +39,7 @@ export default function ViewSchedule() {
     }, [tournamentId]);
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <Box sx={{ p: 6, minHeight: "100vh", background: "rgba(255,255,255,0.7)", borderRadius: 3 }}>
             <Toaster position="top-center" reverseOrder={false} />
             <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">View Schedule</h2>
             {tournamentId ? (
@@ -74,6 +75,6 @@ export default function ViewSchedule() {
             ) : (
                 <p className="text-gray-700 text-center">No tournament selected. Please go back and select a tournament.</p>
             )}
-        </div>
+        </Box>
     );
 }

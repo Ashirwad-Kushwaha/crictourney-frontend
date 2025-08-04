@@ -1,69 +1,255 @@
 import { useState } from "react";
-import { userApi } from "../services/api"; // Use named import
+import { userApi } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    Select,
+    MenuItem,
+    Snackbar,
+    Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    CircularProgress
+} from "@mui/material";
 
 export default function Signup() {
-    const [form, setForm] = useState({ username: "", password: "", role: "USER" });
+    const [step, setStep] = useState(1);
+    const [form, setForm] = useState({
+        username: "",
+        email: "",
+        otp: "",
+        name: "",
+        password: "",
+        role: "USER"
+    });
+    const [loading, setLoading] = useState(false);
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+    const [dialog, setDialog] = useState({ open: false, title: "", content: "" });
     const navigate = useNavigate();
 
-    const signup = async (e) => {
+    const showSnackbar = (message, severity = "info") => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const showDialog = (title, content) => {
+        setDialog({ open: true, title, content });
+    };
+
+    // Step 1: Send username/email for registration
+    const handleRegister = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
-            await userApi.post("/auth/signup", form); // Use userApi here
-            alert("Registered successfully");
-            navigate("/login");
+            const res = await userApi.post("/auth/user-register", {
+                username: form.username,
+                email: form.email
+            });
+            // Check backend message for already registered/taken
+            if (
+                res.data?.message === "Email already registered." ||
+                res.data?.message === "Username already taken."
+            ) {
+                showSnackbar(res.data.message, "error");
+                // Stay on registration page
+            } else {
+                showDialog("OTP Sent", "An OTP has been sent to your email.");
+                setStep(2);
+            }
         } catch {
-            alert("Signup failed");
+            showSnackbar("Registration failed. Try again.", "error");
         }
+        setLoading(false);
+    };
+
+    // Step 2: Verify OTP
+    const handleVerifyOtp = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await userApi.post("/auth/user-verify", null, {
+                params: { email: form.email, otp: form.otp }
+            });
+            showDialog("OTP Verified", "OTP verified. Please enter your details.");
+            setStep(3);
+        } catch {
+            showSnackbar("OTP verification failed.", "error");
+        }
+        setLoading(false);
+    };
+
+    // Step 3: Submit user details
+    const handleDetails = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await userApi.post("/auth/user-details", null, {
+                params: {
+                    email: form.email,
+                    name: form.name,
+                    password: form.password,
+                    role: form.role
+                }
+            });
+            showDialog("Success", "Details saved. You can now login.");
+            setTimeout(() => navigate("/login"), 1500);
+        } catch {
+            showSnackbar("Failed to save details.", "error");
+        }
+        setLoading(false);
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
-                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Create an Account</h2>
-                <form onSubmit={signup} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                        <input
-                            type="text"
-                            placeholder="Enter your username"
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#f3f4f6">
+            <Box maxWidth={400} width="100%" p={4} bgcolor="white" boxShadow={3} borderRadius={3}>
+                <Typography variant="h4" fontWeight={700} textAlign="center" mb={3}>
+                    {step === 1 && "Register"}
+                    {step === 2 && "Verify OTP"}
+                    {step === 3 && "User Details"}
+                </Typography>
+                {step === 1 && (
+                    <form onSubmit={handleRegister}>
+                        <TextField
+                            label="Username"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={form.username}
                             onChange={(e) => setForm({ ...form, username: e.target.value })}
+                            required
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                            onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        <TextField
+                            label="Email"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            type="email"
+                            value={form.email}
+                            onChange={(e) => setForm({ ...form, email: e.target.value })}
+                            required
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                            onChange={(e) => setForm({ ...form, role: e.target.value })}
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="success"
+                            fullWidth
+                            sx={{ mt: 2 }}
+                            disabled={loading}
+                            startIcon={loading && <CircularProgress size={20} color="inherit" />}
                         >
-                            <option value="USER">User</option>
-                            <option value="ADMIN">Admin</option>
-                        </select>
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition duration-300"
-                    >
-                        Signup
-                    </button>
-                </form>
-                <p className="text-sm text-center text-gray-600 mt-4">
+                            {loading ? "Sending OTP..." : "Send OTP"}
+                        </Button>
+                    </form>
+                )}
+                {step === 2 && (
+                    <form onSubmit={handleVerifyOtp}>
+                        <TextField
+                            label="OTP"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={form.otp}
+                            onChange={(e) => setForm({ ...form, otp: e.target.value })}
+                            required
+                        />
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="success"
+                            fullWidth
+                            sx={{ mt: 2 }}
+                            disabled={loading}
+                            startIcon={loading && <CircularProgress size={20} color="inherit" />}
+                        >
+                            {loading ? "Verifying..." : "Verify OTP"}
+                        </Button>
+                    </form>
+                )}
+                {step === 3 && (
+                    <form onSubmit={handleDetails}>
+                        <TextField
+                            label="Name"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={form.name}
+                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                            required
+                        />
+                        <TextField
+                            label="Password"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            type="password"
+                            value={form.password}
+                            onChange={(e) => setForm({ ...form, password: e.target.value })}
+                            required
+                        />
+                        {/* Role selection hidden, always USER */}
+                        {/* <Select
+                            value={form.role}
+                            onChange={(e) => setForm({ ...form, role: e.target.value })}
+                            fullWidth
+                            margin="normal"
+                        >
+                            <MenuItem value="USER">User</MenuItem>
+                            <MenuItem value="ADMIN">Admin</MenuItem>
+                        </Select> */}
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="success"
+                            fullWidth
+                            sx={{ mt: 2 }}
+                            disabled={loading}
+                            startIcon={loading && <CircularProgress size={20} color="inherit" />}
+                        >
+                            {loading ? "Saving..." : "Save Details"}
+                        </Button>
+                    </form>
+                )}
+                <Typography variant="body2" textAlign="center" mt={3}>
                     Already have an account?{" "}
-                    <a href="/login" className="text-green-600 hover:underline">
+                    <Button variant="text" color="success" onClick={() => navigate("/login")}>
                         Login
-                    </a>
-                </p>
-            </div>
-        </div>
+                    </Button>
+                </Typography>
+                {/* Snackbar for notifications */}
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={3000}
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                    <Alert
+                        onClose={() => setSnackbar({ ...snackbar, open: false })}
+                        severity={snackbar.severity}
+                        sx={{ width: "100%" }}
+                    >
+                        {snackbar.message}
+                    </Alert>
+                </Snackbar>
+                {/* Dialog for important info */}
+                <Dialog
+                    open={dialog.open}
+                    onClose={() => setDialog({ ...dialog, open: false })}
+                >
+                    <DialogTitle>{dialog.title}</DialogTitle>
+                    <DialogContent>
+                        <Typography>{dialog.content}</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialog({ ...dialog, open: false })} color="success">
+                            OK
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Box>
+        </Box>
     );
 }

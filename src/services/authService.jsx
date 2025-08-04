@@ -9,3 +9,13 @@ export const signup = async (userData) => {
 export const login = async (credentials) => {
   return axios.post(`${API_BASE}/login`, credentials);
 };
+
+export function getUser() {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return null;
+    try {
+        return JSON.parse(userStr);
+    } catch {
+        return null;
+    }
+}

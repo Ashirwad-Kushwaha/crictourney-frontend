@@ -2,7 +2,7 @@ import axios from "axios";
 import { getToken } from "../auth";
 
 const userApi = axios.create({
-    baseURL: "http://localhost:8081", // User Service
+    baseURL: "http://localhost:8080/api", // User Service
 });
 
 const tournamentApi = axios.create({

@@ -61,6 +61,55 @@ export default function RegisterTeam() {
         }
     };
 
+    // Autofill handler
+    const handleAutofill = () => {
+        // Example random names (can be shuffled for randomness)
+        const playerNames = [
+            "Rohit Sharma", "KL Rahul", "Virat Kohli", "Shubman Gill", "Suryakumar Yadav",
+            "Hardik Pandya", "Ravindra Jadeja", "Jasprit Bumrah", "Mohammed Shami", "Kuldeep Yadav",
+            "Rishabh Pant", "Axar Patel", "Shardul Thakur", "Yuzvendra Chahal", "Ishan Kishan"
+        ];
+
+        // Batting styles to assign to bowlers
+        const battingStyles = ["RIGHT_HANDED_BATSMAN", "LEFT_HANDED_BATSMAN"];
+
+        const autofilledPlayers = form.players.map((player, idx) => {
+            let roles = [];
+            if (idx === 0) {
+                roles = ["CAPTAIN", "RIGHT_HANDED_BATSMAN"];
+            } else if (idx === 1) {
+                roles = ["WICKET_KEEPER", "LEFT_HANDED_BATSMAN"];
+            } else if (idx < 6) {
+                // Top order batsmen
+                roles = [idx % 2 === 0 ? "RIGHT_HANDED_BATSMAN" : "LEFT_HANDED_BATSMAN"];
+            } else if (idx < 10) {
+                // Fast bowlers with batting style
+                roles = [
+                    "FAST_BOWLER",
+                    battingStyles[idx % 2]
+                ];
+            } else if (idx < 13) {
+                // Spin bowlers with batting style
+                roles = [
+                    "SPIN_BOWLER",
+                    battingStyles[idx % 2]
+                ];
+            } else {
+                // Medium bowlers with batting style
+                roles = [
+                    "MEDIUM_BOWLER",
+                    battingStyles[idx % 2]
+                ];
+            }
+            return {
+                ...player,
+                name: playerNames[idx] || `Player${idx + 1}`,
+                roles,
+            };
+        });
+        setForm({ ...form, players: autofilledPlayers });
+    };
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">Register Team</h2>
@@ -88,6 +137,13 @@ export default function RegisterTeam() {
                         disabled={!!tournamentId} // Disable if pre-filled
                     />
                 </div>
+                <button
+                    type="button"
+                    onClick={handleAutofill}
+                    className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                >
+                    Autofill
+                </button>
                 <h3 className="text-xl font-bold mb-4 text-gray-800">Players</h3>
                 {form.players.map((player, index) => (
                     <div key={player.id} className="mb-6">

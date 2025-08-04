@@ -1,13 +1,60 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { tournamentApi, schedulerApi } from "../services/api"; // Import schedulerApi
+import { useNavigate, useLocation } from "react-router-dom";
+import { tournamentApi, schedulerApi } from "../services/api";
 import toast, { Toaster } from "react-hot-toast";
+import Select from "react-select";
+import { State, City } from "country-state-city";
+import { getUser } from "../services/authService";
+import {
+    Box,
+    Card,
+    CardContent,
+    CardActions,
+    Typography,
+    Button,
+    Grid,
+    Paper,
+    Divider,
+    Chip
+} from "@mui/material";
 
 export default function AdminTournamentDashboard() {
     const [tournaments, setTournaments] = useState([]);
-    const [form, setForm] = useState({ name: "", teamLimit: 0, entryFee: 0 });
-    const [selectedTournament, setSelectedTournament] = useState(null);
+    const [form, setForm] = useState({
+        name: "",
+        teamLimit: 0,
+        entryFee: 0,
+        venue: "",
+        street: "",
+        state: "",
+        district: "",
+        city: "",
+        pincode: ""
+    });
+    const [stateOptions, setStateOptions] = useState([]);
+    const [districtOptions, setDistrictOptions] = useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const email = params.get("username") || params.get("email");
+        const user = getUser();
+        // If email is missing in URL, redirect with email
+        if (user && user.role === "ADMIN" && !email && user.email) {
+            navigate(`/admin?email=${user.email}`, { replace: true });
+        }
+    }, [location, navigate]);
+
+    useEffect(() => {
+        // Load Indian states
+        const states = State.getStatesOfCountry("IN").map((s) => ({
+            value: s.name,
+            label: s.name,
+            isoCode: s.isoCode
+        }));
+        setStateOptions(states);
+    }, []);
 
     const fetchTournaments = async () => {
         try {
@@ -20,6 +67,24 @@ export default function AdminTournamentDashboard() {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleStateChange = (selected) => {
+        setForm({ ...form, state: selected ? selected.value : "", district: "", city: "" });
+        if (selected) {
+            // Use cities as districts for simplicity (country-state-city doesn't have districts)
+            const cities = City.getCitiesOfState("IN", selected.isoCode).map((c) => ({
+                value: c.name,
+                label: c.name
+            }));
+            setDistrictOptions(cities);
+        } else {
+            setDistrictOptions([]);
+        }
+    };
+
+    const handleDistrictChange = (selected) => {
+        setForm({ ...form, district: selected ? selected.value : "" });
     };
 
     const handleCreate = async (e) => {
@@ -44,12 +109,10 @@ export default function AdminTournamentDashboard() {
     };
 
     const handleTournamentClick = (tournament) => {
-        setSelectedTournament(tournament);
+        navigate('/tournament-details', { state: { tournament } });
     };
 
-    const handleBackClick = () => {
-        setSelectedTournament(null);
-    };
+    // Removed handleBackClick, not needed anymore
 
     const handleRegisterTeam = (tournamentId) => {
         navigate(`/register-team?tournamentId=${tournamentId}`);
@@ -74,140 +137,178 @@ export default function AdminTournamentDashboard() {
     }, []);
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <Box sx={{ bgcolor: "#f3f4f6", minHeight: "100vh", p: 4 }}>
             <Toaster position="top-center" reverseOrder={false} />
-            {!selectedTournament ? (
-                <>
-                    <form onSubmit={handleCreate} className="bg-white p-6 shadow rounded mb-6">
-                        <h3 className="text-xl font-bold mb-4 text-gray-800">Create a New Tournament</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <input
-                                name="name"
-                                placeholder="Tournament Name"
-                                onChange={handleChange}
-                                className="border p-2 rounded w-full md:w-1/3"
-                                required
-                            />
-                            <input
-                                name="teamLimit"
-                                type="number"
-                                placeholder="Team Limit"
-                                onChange={handleChange}
-                                className="border p-2 rounded w-full md:w-1/3"
-                                required
-                            />
-                            <input
-                                name="entryFee"
-                                type="number"
-                                placeholder="Entry Fee"
-                                onChange={handleChange}
-                                className="border p-2 rounded w-full md:w-1/3"
-                                required
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        >
-                            Create Tournament
-                        </button>
-                    </form>
-                    <h3 className="text-xl font-bold mb-4 text-gray-800">Tournaments</h3>
-                    <ul className="space-y-4">
-                        {tournaments.map((tournament) => (
-                            <div
-                                key={tournament.id}
-                                className="bg-white p-4 shadow rounded flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                                onClick={() => handleTournamentClick(tournament)}
-                            >
-                                <div>
-                                    <h4 className="text-lg font-bold text-gray-800">{tournament.name}</h4>
-                                    <p className="text-gray-700">
-                                        <span className="font-bold">Team Limit:</span> {tournament.teamLimit}
-                                    </p>
-                                    <p className="text-gray-700">
-                                        <span className="font-bold">Entry Fee:</span> ₹{tournament.entryFee}
-                                    </p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDelete(tournament.id);
-                                        }}
-                                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            <Grid container spacing={2} alignItems="flex-start" wrap="nowrap">
+                {/* Left Sidebar: Create Tournament */}
+                <Grid item sx={{ minWidth: 300, maxWidth: 340, flex: '0 0 320px' }}>
+                    <Paper elevation={3} sx={{ p: 2, borderRadius: 3, position: "sticky", top: 32, minWidth: 260, maxWidth: 340 }}>
+                        <Typography variant="h6" fontWeight={700} mb={2} color="text.secondary">
+                            Create a New Tournament
+                        </Typography>
+                        <form onSubmit={handleCreate}>
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <input
+                                    name="name"
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    placeholder="Tournament Name"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <input
+                                    name="teamLimit"
+                                    type="number"
+                                    value={form.teamLimit}
+                                    onChange={handleChange}
+                                    placeholder="Team Limit"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <input
+                                    name="entryFee"
+                                    type="number"
+                                    value={form.entryFee}
+                                    onChange={handleChange}
+                                    placeholder="Entry Fee"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <input
+                                    name="venue"
+                                    value={form.venue}
+                                    onChange={handleChange}
+                                    placeholder="Venue"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <input
+                                    name="street"
+                                    value={form.street}
+                                    onChange={handleChange}
+                                    placeholder="Street"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <Select
+                                    options={stateOptions}
+                                    value={stateOptions.find((opt) => opt.value === form.state)}
+                                    onChange={handleStateChange}
+                                    placeholder="Select State"
+                                    isClearable
+                                />
+                                <Select
+                                    options={districtOptions}
+                                    value={districtOptions.find((opt) => opt.value === form.district)}
+                                    onChange={handleDistrictChange}
+                                    placeholder="Select District"
+                                    isClearable
+                                />
+                                <input
+                                    name="city"
+                                    value={form.city}
+                                    onChange={handleChange}
+                                    placeholder="City"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <input
+                                    name="pincode"
+                                    value={form.pincode}
+                                    onChange={handleChange}
+                                    placeholder="Pincode"
+                                    required
+                                    style={{ padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                                />
+                                <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: 2 }}>
+                                    Create Tournament
+                                </Button>
+                            </Box>
+                        </form>
+                    </Paper>
+                </Grid>
+                {/* Right Main Content: Tournaments */}
+                <Grid item sx={{ minWidth: 350, maxWidth: '100%', flex: '1 1 0' }}>
+                    <Card sx={{ height: '75vh', overflowY: 'auto', p: 2, borderRadius: 3, boxShadow: 3, minWidth: 320, maxWidth: '100%' }}>
+                        <Typography variant="h5" fontWeight={700} mb={3} color="primary">
+                            Tournaments
+                        </Typography>
+                        <Grid container spacing={3}>
+                            {tournaments.map((tournament) => (
+                                <Grid item xs={12} md={6} lg={4} key={tournament.id}>
+                                    <Card
+                                        sx={{ borderRadius: 3, boxShadow: 3, transition: "0.2s", cursor: "pointer", '&:hover': { boxShadow: 6 } }}
+                                        onClick={() => handleTournamentClick(tournament)}
                                     >
-                                        Delete
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleRegisterTeam(tournament.id);
-                                        }}
-                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                                    >
-                                        Register Team
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleCreateSchedule(tournament.id);
-                                        }}
-                                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                    >
-                                        Create Schedule
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleViewSchedule(tournament.id);
-                                        }}
-                                        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-                                    >
-                                        View Schedule
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </ul>
-                </>
-            ) : (
-                <div className="bg-white p-6 shadow rounded">
-                    <button
-                        onClick={handleBackClick}
-                        className="bg-gray-600 text-white px-4 py-2 rounded mb-4 hover:bg-gray-700"
-                    >
-                        Back to Tournaments
-                    </button>
-                    <h3 className="text-2xl font-bold mb-4 text-gray-800">{selectedTournament.name}</h3>
-                    <p className="text-gray-700 mb-2">
-                        <span className="font-bold">Team Limit:</span> {selectedTournament.teamLimit}
-                    </p>
-                    <p className="text-gray-700 mb-4">
-                        <span className="font-bold">Entry Fee:</span> ₹ {selectedTournament.entryFee}
-                    </p>
-                    <h4 className="text-xl font-bold text-gray-800 mb-4">Teams</h4>
-                    {selectedTournament.teams.length > 0 ? (
-                        <ul className="space-y-4">
-                            {selectedTournament.teams.map((team) => (
-                                <li key={team.id} className="bg-gray-100 p-4 rounded shadow">
-                                    <h5 className="text-lg font-bold text-blue-700">{team.teamName}</h5>
-                                    <ul className="ml-4 mt-2 space-y-1">
-                                        {team.players.map((player, index) => (
-                                            <li key={index} className="text-gray-700">
-                                                <span className="font-bold">{player.name}</span> -{" "}
-                                                <span className="italic">{player.roles.join(", ")}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </li>
+                                        <CardContent>
+                                            <Typography variant="h6" fontWeight={700} color="primary" gutterBottom>
+                                                {tournament.name}
+                                            </Typography>
+                                            <Divider sx={{ mb: 2 }} />
+                                            <Chip label={`Team Limit: ${tournament.teamLimit}`} color="info" sx={{ mr: 1, mb: 1 }} />
+                                            <Chip label={`Entry Fee: ₹${tournament.entryFee}`} color="success" sx={{ mb: 1 }} />
+                                            <Typography variant="body2" color="text.secondary" mt={2}>
+                                                <strong>Venue:</strong> {tournament.venue}<br />
+                                                <strong>Street:</strong> {tournament.street}<br />
+                                                <strong>City:</strong> {tournament.city}<br />
+                                                <strong>District:</strong> {tournament.district}<br />
+                                                <strong>State:</strong> {tournament.state}<br />
+                                                <strong>Pincode:</strong> {tournament.pincode}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRegisterTeam(tournament.id);
+                                                }}
+                                                variant="contained"
+                                                color="success"
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                Register Team
+                                            </Button>
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleCreateSchedule(tournament.id);
+                                                }}
+                                                variant="contained"
+                                                color="primary"
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                Create Schedule
+                                            </Button>
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleViewSchedule(tournament.id);
+                                                }}
+                                                variant="contained"
+                                                color="secondary"
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                View Schedule
+                                            </Button>
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(tournament.id);
+                                                }}
+                                                variant="contained"
+                                                color="error"
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
                             ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-700">No teams registered yet.</p>
-                    )}
-                </div>
-            )}
-        </div>
+                        </Grid>
+                    </Card>
+                </Grid>
+            </Grid>
+        </Box>
     );
 }
