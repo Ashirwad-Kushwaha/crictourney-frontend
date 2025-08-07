@@ -20,7 +20,7 @@ export default function Navbar() {
                     className="h-8" // Adjust the height as needed
                 />
             </Link>
-            <div>
+            <div className="flex items-center">
                 {!user ? (
                     <>
                         <Link to="/login" className="mx-2">Login</Link>
@@ -30,6 +30,12 @@ export default function Navbar() {
                     <>
                         <span className="mr-2">Hello, {user.sub}</span>
                         <button onClick={logout} className="bg-white text-blue-600 px-2 py-1 rounded">Logout</button>
+                        <button
+                            onClick={() => navigate("/payment-history")}
+                            className="ml-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Payment History
+                        </button>
                     </>
                 )}
             </div>

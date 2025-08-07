@@ -11,6 +11,7 @@ import Navbar from "./components/Navbar";
 import { getUser } from "./auth";
 import { Box } from "@mui/material";
 import bgImage from "./assets/cricket-stadium-vector.jpg";
+import PaymentHistory from "./pages/PaymentHistory";
 
 function ProtectedRoute({ children, role }) {
     const user = getUser();
@@ -72,6 +73,7 @@ function App() {
                     <Route path="/view-schedule" element={<ProtectedRoute><ViewSchedule /></ProtectedRoute>} />
                     <Route path="/tournament-details" element={<ProtectedRoute><TournamentDetails /></ProtectedRoute>} />
                     <Route path="/tournament-details/:tournamentId" element={<ProtectedRoute><TournamentDetails /></ProtectedRoute>} />
+                    <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
                 </Routes>
             </BrowserRouter>
         </Box>
