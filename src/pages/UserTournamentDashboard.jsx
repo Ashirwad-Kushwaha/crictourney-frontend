@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getUser } from "../auth";
-import { tournamentApi } from "../services/api";
+import { tournamentApi, teamApi } from "../services/api";
 import Select from "react-select";
 import { State, City } from "country-state-city";
 import {

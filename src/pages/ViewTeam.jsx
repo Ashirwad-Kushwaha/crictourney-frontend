@@ -23,25 +23,29 @@ export default function ViewTeam() {
     if (!team) return <Typography sx={{ m: 4 }}>Team not found.</Typography>;
 
     return (
-        <Box sx={{ p: 4 }}>
-            <Typography variant="h4" fontWeight={700} mb={2} color="primary">
+        <Box sx={{ p: 2, minHeight: '100vh', bgcolor: 'rgba(243,244,246,0.7)' }}>
+            <Typography variant="h6" fontWeight={600} mb={1.5} color="primary" sx={{ fontSize: '1.2rem' }}>
                 {team.teamName}
             </Typography>
-            <Paper sx={{ p: 3, mb: 3 }}>
-                <Typography variant="subtitle1">Tournament ID: {team.tournamentId}</Typography>
-                <Typography variant="subtitle1">Created By: {team.createdBy}</Typography>
+            <Paper sx={{ p: 1.5, mb: 2, borderRadius: 2, background: 'rgba(255,255,255,0.7)', boxShadow: 2 }}>
+                <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>Tournament ID: {team.tournamentId}</Typography>
+                <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>Created By: {team.createdBy}</Typography>
             </Paper>
-            <Typography variant="h6" mb={1}>Players</Typography>
-            <List>
-                {players.map((player, idx) => (
-                    <ListItem key={player.id || idx}>
-                        <ListItemText
-                            primary={player.name}
-                            secondary={player.roles && player.roles.length > 0 ? player.roles.join(", ") : ""}
-                        />
-                    </ListItem>
-                ))}
-            </List>
+            <Typography variant="subtitle2" mb={0.5} sx={{ fontWeight: 600, fontSize: '1rem' }}>Players</Typography>
+            <Paper sx={{ p: 1, borderRadius: 2, background: 'rgba(255,255,255,0.6)', boxShadow: 1, maxHeight: 320, overflowY: 'auto' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {players.map((player, idx) => (
+                        <Paper key={player.id || idx} sx={{ width: '100%', m: 0.5, p: 1, borderRadius: 1.5, background: 'rgba(255,255,255,0.85)', boxShadow: 0 }}>
+                            <Typography variant="subtitle2" fontWeight={600} color="primary" sx={{ fontSize: '1rem' }}>
+                                {player.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                                Roles: {player.roles && player.roles.length > 0 ? player.roles.join(", ") : "-"}
+                            </Typography>
+                        </Paper>
+                    ))}
+                </Box>
+            </Paper>
         </Box>
     );
 }
