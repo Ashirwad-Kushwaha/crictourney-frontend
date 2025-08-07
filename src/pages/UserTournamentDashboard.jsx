@@ -14,7 +14,13 @@ import {
     Grid,
     Paper,
     Divider,
-    Chip
+    Chip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    MenuItem,
+    Select as MuiSelect
 } from "@mui/material";
 
 export default function UserTournamentDashboard() {
@@ -32,6 +38,10 @@ export default function UserTournamentDashboard() {
     const [filteredTournaments, setFilteredTournaments] = useState([]);
     const [stateOptions, setStateOptions] = useState([]);
     const [districtOptions, setDistrictOptions] = useState([]);
+    const [myTeams, setMyTeams] = useState([]);
+    const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+    const [selectedTournamentForExisting, setSelectedTournamentForExisting] = useState(null);
+    const [selectedTeamId, setSelectedTeamId] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -65,6 +75,10 @@ export default function UserTournamentDashboard() {
 
     useEffect(() => {
         fetchTournaments();
+        // Fetch user's teams for "register with existing team"
+        teamApi.get("/teams/my")
+            .then(res => setMyTeams(res.data))
+            .catch(() => setMyTeams([]));
     }, []);
 
     // Only filter when user clicks Apply
@@ -129,6 +143,27 @@ export default function UserTournamentDashboard() {
 
     const handleViewScheduleClick = (tournamentId) => {
         navigate(`/view-schedule?tournamentId=${tournamentId}`);
+    };
+
+    const handleRegisterWithExistingTeam = (tournament) => {
+        setSelectedTournamentForExisting(tournament);
+        setRegisterDialogOpen(true);
+    };
+
+    const handleExistingTeamRegister = async () => {
+        if (!selectedTeamId || !selectedTournamentForExisting) return;
+        try {
+            // Call backend to register the selected team for the selected tournament
+            await teamApi.post("/teams/register-existing", {
+                teamId: selectedTeamId,
+                tournamentId: selectedTournamentForExisting.id,
+                fee: selectedTournamentForExisting.entryFee
+            });
+            alert("Team registered to tournament successfully!");
+            setRegisterDialogOpen(false);
+        } catch (err) {
+            alert(err.response?.data || "Failed to register team to tournament");
+        }
     };
 
     return (
@@ -233,6 +268,14 @@ export default function UserTournamentDashboard() {
                                                 Register
                                             </Button>
                                             <Button
+                                                onClick={(e) => { e.stopPropagation(); handleRegisterWithExistingTeam(tournament); }}
+                                                variant="outlined"
+                                                color="primary"
+                                                sx={{ borderRadius: 2 }}
+                                            >
+                                                Register with Existing Team
+                                            </Button>
+                                            <Button
                                                 onClick={(e) => { e.stopPropagation(); handleViewScheduleClick(tournament.id); }}
                                                 variant="contained"
                                                 color="secondary"
@@ -256,6 +299,28 @@ export default function UserTournamentDashboard() {
                     </Card>
                 </Grid>
             </Grid>
+            <Dialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)}>
+                <DialogTitle>Register with Existing Team</DialogTitle>
+                <DialogContent>
+                    <MuiSelect
+                        value={selectedTeamId}
+                        onChange={e => setSelectedTeamId(e.target.value)}
+                        fullWidth
+                        displayEmpty
+                    >
+                        <MenuItem value="" disabled>Select your team</MenuItem>
+                        {myTeams.map(team => (
+                            <MenuItem key={team.id} value={team.id}>
+                                {team.teamName} (ID: {team.id})
+                            </MenuItem>
+                        ))}
+                    </MuiSelect>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setRegisterDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleExistingTeamRegister} variant="contained" disabled={!selectedTeamId}>Register</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
