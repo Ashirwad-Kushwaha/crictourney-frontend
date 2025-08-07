@@ -116,15 +116,15 @@ export default function UserTournamentDashboard() {
     };
 
     const handleTournamentClick = (tournament) => {
-        navigate('/tournament-details', { state: { tournament } });
+        navigate(`/tournament-details?tournamentId=${tournament.id}`, { state: { tournament } });
     };
 
     const handleBackClick = () => {
         setSelectedTournament(null);
     };
 
-    const handleRegisterClick = (tournamentId) => {
-        navigate(`/register-team?tournamentId=${tournamentId}`);
+    const handleRegisterClick = (tournamentId, entryFee) => {
+        navigate(`/register-team?tournamentId=${tournamentId}&fee=${entryFee}`);
     };
 
     const handleViewScheduleClick = (tournamentId) => {
@@ -225,7 +225,7 @@ export default function UserTournamentDashboard() {
                                         </CardContent>
                                         <CardActions>
                                             <Button
-                                                onClick={(e) => { e.stopPropagation(); handleRegisterClick(tournament.id); }}
+                                                onClick={(e) => { e.stopPropagation(); handleRegisterClick(tournament.id, tournament.entryFee); }}
                                                 variant="contained"
                                                 color="success"
                                                 sx={{ borderRadius: 2 }}

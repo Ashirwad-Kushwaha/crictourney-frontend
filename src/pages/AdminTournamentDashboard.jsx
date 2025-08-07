@@ -114,8 +114,8 @@ export default function AdminTournamentDashboard() {
 
     // Removed handleBackClick, not needed anymore
 
-    const handleRegisterTeam = (tournamentId) => {
-        navigate(`/register-team?tournamentId=${tournamentId}`);
+    const handleRegisterTeam = (tournamentId, entryFee) => {
+        navigate(`/register-team?tournamentId=${tournamentId}&fee=${entryFee}`);
     };
 
     const handleCreateSchedule = async (tournamentId) => {
@@ -259,8 +259,9 @@ export default function AdminTournamentDashboard() {
                                         <CardActions>
                                             <Button
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
-                                                    handleRegisterTeam(tournament.id);
+                                                    handleRegisterTeam(tournament.id, tournament.entryFee);
                                                 }}
                                                 variant="contained"
                                                 color="success"
@@ -281,6 +282,7 @@ export default function AdminTournamentDashboard() {
                                             </Button>
                                             <Button
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     handleViewSchedule(tournament.id);
                                                 }}

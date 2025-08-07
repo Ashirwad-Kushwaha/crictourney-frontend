@@ -19,9 +19,7 @@ function ProtectedRoute({ children, role }) {
         const params = new URLSearchParams(window.location.search);
         const email = params.get("email") || params.get("username");
         if (email) {
-            // You may want to fetch user details from backend here and save token/user info
-            // For now, redirect to login with email in query
-            return <Navigate to={`/login?email=${email}`} replace />;
+            return <Navigate to={`/login/user?email=${email}`} replace />;
         }
         return <Navigate to="/login" replace />;
     }
@@ -58,10 +56,10 @@ function App() {
                                 ) : user.role === "USER" ? (
                                     <Navigate to={`/user${email ? `?email=${email}` : ""}`} replace />
                                 ) : (
-                                    <Navigate to={`/login${email ? `?email=${email}` : ""}`} replace />
+                                    <Navigate to={`/login`} replace />
                                 )
                             ) : (
-                                <Navigate to={`/login${email ? `?email=${email}` : ""}`} replace />
+                                <Navigate to={`/login`} replace />
                             )
                         }
                     />
@@ -69,10 +67,11 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminTournamentDashboard /></ProtectedRoute>} />
                     <Route path="/user" element={<ProtectedRoute role="USER"><UserTournamentDashboard /></ProtectedRoute>} />
-                    <Route path="/register-team" element={<ProtectedRoute role="USER"><RegisterTeam /></ProtectedRoute>} />
+                    <Route path="/register-team" element={<ProtectedRoute><RegisterTeam /></ProtectedRoute>} />
                     <Route path="/create-schedule" element={<ProtectedRoute role="ADMIN"><CreateSchedule /></ProtectedRoute>} />
-                    <Route path="/view-schedule" element={<ProtectedRoute role="USER"><ViewSchedule /></ProtectedRoute>} />
-                    <Route path="/tournament-details" element={<TournamentDetails />} />
+                    <Route path="/view-schedule" element={<ProtectedRoute><ViewSchedule /></ProtectedRoute>} />
+                    <Route path="/tournament-details" element={<ProtectedRoute><TournamentDetails /></ProtectedRoute>} />
+                    <Route path="/tournament-details/:tournamentId" element={<ProtectedRoute><TournamentDetails /></ProtectedRoute>} />
                 </Routes>
             </BrowserRouter>
         </Box>

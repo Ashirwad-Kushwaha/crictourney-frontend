@@ -1,12 +1,35 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Box, Typography, Divider, Grid, Paper, Button, Chip } from "@mui/material";
+import { tournamentApi, teamApi } from "../services/api";
 
 export default function TournamentDetails() {
+
     const location = useLocation();
     const navigate = useNavigate();
-    const tournament = location.state?.tournament;
+    const params = useParams();
+    const [tournament, setTournament] = useState(location.state?.tournament || null);
+    const [loading, setLoading] = useState(false);
+    const tournamentId = params.tournamentId || new URLSearchParams(location.search).get("tournamentId");
 
+    useEffect(() => {
+        if (!tournament && tournamentId) {
+            setLoading(true);
+            tournamentApi.get(`/tournament/${tournamentId}`)
+                .then(res => setTournament(res.data))
+                .catch(() => setTournament(null))
+                .finally(() => setLoading(false));
+        }
+    }, [tournament, tournamentId]);
+
+    if (loading) {
+        return (
+            <Box sx={{ p: 4 }}>
+                <Typography variant="h5" color="primary">Loading tournament details...</Typography>
+            </Box>
+        );
+    }
     if (!tournament) {
         return (
             <Box sx={{ p: 4 }}>
@@ -88,3 +111,4 @@ export default function TournamentDetails() {
         </Box>
     );
 }
+
