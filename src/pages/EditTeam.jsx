@@ -23,21 +23,27 @@ export default function EditTeam() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        teamApi.get(`/teams/${teamId}`)
-            .then(res => {
+        let teamData = null;
+        let playersData = null;
+        Promise.all([
+            teamApi.get(`/teams/${teamId}`)
+                .then(res => { teamData = res.data; })
+                .catch(() => {}),
+            teamApi.get(`/teams/${teamId}/players`)
+                .then(res => { playersData = res.data; })
+                .catch(() => {})
+        ]).then(() => {
+            if (teamData) {
                 setForm({
-                    teamName: res.data.teamName,
-                    tournamentId: res.data.tournamentId,
-                    players: [],
+                    teamName: teamData.teamName,
+                    tournamentId: teamData.tournamentId,
+                    players: playersData ? playersData.map(p => ({ name: p.name, roles: p.roles })) : [],
                 });
-            })
-            .catch(() => setForm(null));
-        teamApi.get(`/teams/${teamId}/players`)
-            .then(res => {
-                setForm(prev => prev ? { ...prev, players: res.data.map(p => ({ name: p.name, roles: p.roles })) } : null);
-            })
-            .catch(() => {});
-        setLoading(false);
+            } else {
+                setForm(null);
+            }
+            setLoading(false);
+        });
     }, [teamId]);
 
     const handleChange = (e) => {
@@ -84,7 +90,7 @@ export default function EditTeam() {
             <Typography variant="h4" fontWeight={700} mb={3} color="primary">
                 Edit Team
             </Typography>
-            <Paper sx={{ p: 3 }}>
+            <Paper sx={{ p: 3, maxHeight: 600, overflowY: 'auto', backgroundColor: 'rgba(255,255,255,0.85)' }}>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-gray-700 font-bold mb-2">Team Name</label>

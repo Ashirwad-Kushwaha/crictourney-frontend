@@ -9,6 +9,7 @@ import {
     Select,
     MenuItem,
     Snackbar,
+    Paper,
     Alert,
     Dialog,
     DialogTitle,
@@ -104,152 +105,121 @@ export default function Signup() {
     };
 
     return (
-        <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="#f3f4f6">
-            <Box maxWidth={400} width="100%" p={4} bgcolor="white" boxShadow={3} borderRadius={3}>
-                <Typography variant="h4" fontWeight={700} textAlign="center" mb={3}>
-                    {step === 1 && "Register"}
-                    {step === 2 && "Verify OTP"}
-                    {step === 3 && "User Details"}
-                </Typography>
-                {step === 1 && (
-                    <form onSubmit={handleRegister}>
-                        <TextField
-                            label="Username"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={form.username}
-                            onChange={(e) => setForm({ ...form, username: e.target.value })}
-                            required
-                        />
-                        <TextField
-                            label="Email"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            type="email"
-                            value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                            required
-                        />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="success"
-                            fullWidth
-                            sx={{ mt: 2 }}
-                            disabled={loading}
-                            startIcon={loading && <CircularProgress size={20} color="inherit" />}
-                        >
-                            {loading ? "Sending OTP..." : "Send OTP"}
-                        </Button>
-                    </form>
-                )}
-                {step === 2 && (
-                    <form onSubmit={handleVerifyOtp}>
-                        <TextField
-                            label="OTP"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={form.otp}
-                            onChange={(e) => setForm({ ...form, otp: e.target.value })}
-                            required
-                        />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="success"
-                            fullWidth
-                            sx={{ mt: 2 }}
-                            disabled={loading}
-                            startIcon={loading && <CircularProgress size={20} color="inherit" />}
-                        >
-                            {loading ? "Verifying..." : "Verify OTP"}
-                        </Button>
-                    </form>
-                )}
-                {step === 3 && (
-                    <form onSubmit={handleDetails}>
-                        <TextField
-                            label="Name"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={form.name}
-                            onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            required
-                        />
-                        <TextField
-                            label="Password"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            type="password"
-                            value={form.password}
-                            onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            required
-                        />
-                        {/* Role selection hidden, always USER */}
-                        {/* <Select
-                            value={form.role}
-                            onChange={(e) => setForm({ ...form, role: e.target.value })}
-                            fullWidth
-                            margin="normal"
-                        >
-                            <MenuItem value="USER">User</MenuItem>
-                            <MenuItem value="ADMIN">Admin</MenuItem>
-                        </Select> */}
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="success"
-                            fullWidth
-                            sx={{ mt: 2 }}
-                            disabled={loading}
-                            startIcon={loading && <CircularProgress size={20} color="inherit" />}
-                        >
-                            {loading ? "Saving..." : "Save Details"}
-                        </Button>
-                    </form>
-                )}
-                <Typography variant="body2" textAlign="center" mt={3}>
-                    Already have an account?{" "}
-                    <Button variant="text" color="success" onClick={() => navigate("/login")}>
-                        Login
-                    </Button>
-                </Typography>
-                {/* Snackbar for notifications */}
-                <Snackbar
-                    open={snackbar.open}
-                    autoHideDuration={3000}
+        <div className="max-w-md mx-auto mt-10 p-4 bg-white shadow rounded">
+            {/* Snackbar for notifications */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={3000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
                     onClose={() => setSnackbar({ ...snackbar, open: false })}
-                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                    severity={snackbar.severity}
+                    sx={{ width: "100%" }}
                 >
-                    <Alert
-                        onClose={() => setSnackbar({ ...snackbar, open: false })}
-                        severity={snackbar.severity}
-                        sx={{ width: "100%" }}
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+            {/* Dialog for important info */}
+            <Dialog
+                open={dialog.open}
+                onClose={() => setDialog({ ...dialog, open: false })}
+            >
+                <DialogTitle>{dialog.title}</DialogTitle>
+                <DialogContent>
+                    <Typography>{dialog.content}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDialog({ ...dialog, open: false })} color="success">
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <h2 className="text-2xl font-bold mb-4 text-center">
+                {step === 1 && "Register"}
+                {step === 2 && "Verify OTP"}
+                {step === 3 && "User Details"}
+            </h2>
+            {step === 1 && (
+                <form onSubmit={handleRegister}>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={form.username}
+                        onChange={(e) => setForm({ ...form, username: e.target.value })}
+                        className="w-full p-2 mb-2 border rounded"
+                        required
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        className="w-full p-2 mb-2 border rounded"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white px-4 py-2 rounded w-full mt-2"
+                        disabled={loading}
                     >
-                        {snackbar.message}
-                    </Alert>
-                </Snackbar>
-                {/* Dialog for important info */}
-                <Dialog
-                    open={dialog.open}
-                    onClose={() => setDialog({ ...dialog, open: false })}
-                >
-                    <DialogTitle>{dialog.title}</DialogTitle>
-                    <DialogContent>
-                        <Typography>{dialog.content}</Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setDialog({ ...dialog, open: false })} color="success">
-                            OK
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </Box>
-        </Box>
+                        {loading ? "Sending OTP..." : "Send OTP"}
+                    </button>
+                </form>
+            )}
+            {step === 2 && (
+                <form onSubmit={handleVerifyOtp}>
+                    <input
+                        type="text"
+                        placeholder="OTP"
+                        value={form.otp}
+                        onChange={(e) => setForm({ ...form, otp: e.target.value })}
+                        className="w-full p-2 mb-2 border rounded"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white px-4 py-2 rounded w-full mt-2"
+                        disabled={loading}
+                    >
+                        {loading ? "Verifying..." : "Verify OTP"}
+                    </button>
+                </form>
+            )}
+            {step === 3 && (
+                <form onSubmit={handleDetails}>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        className="w-full p-2 mb-2 border rounded"
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        className="w-full p-2 mb-2 border rounded"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white px-4 py-2 rounded w-full mt-2"
+                        disabled={loading}
+                    >
+                        {loading ? "Saving..." : "Save Details"}
+                    </button>
+                </form>
+            )}
+            <p className="text-center mt-3 text-sm">
+                Already have an account?{' '}
+                <button className="text-blue-600 underline" type="button" onClick={() => navigate('/login')}>
+                    Login
+                </button>
+            </p>
+        </div>
     );
 }

@@ -40,73 +40,87 @@ export default function TournamentDetails() {
     }
 
     return (
-        <Box sx={{ bgcolor: "#f3f4f6", minHeight: "100vh", p: 4 }}>
-            <Button
-                onClick={() => navigate(-1)}
-                variant="contained"
-                color="secondary"
-                sx={{ mb: 3, borderRadius: 2 }}
-            >
-                Back
-            </Button>
-            {/* Tournament Info Horizontal Card */}
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, width: "100%", mb: 4, overflowX: "auto", display: "flex", alignItems: "center", minHeight: 120 }}>
-                <Typography variant="h3" fontWeight={700} color="primary" sx={{ minWidth: 220, mr: 4 }}>
-                    {tournament.name}
-                </Typography>
-                <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
-                <Box sx={{ display: "flex", gap: 4, overflowX: "auto", width: "100%" }}>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>Team Limit:</strong> {tournament.teamLimit}
+        <Box sx={{
+            minHeight: '100vh',
+            p: 4,
+            backgroundImage: 'url(/assets/cricket-stadium-vector.jpg)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start'
+        }}>
+            <Paper elevation={3} sx={{ p: 2, borderRadius: 3, minWidth: 340, maxWidth: 1200, width: '100%', background: 'rgba(255,255,255,0.88)', boxShadow: 4 }}>
+                <Button
+                    onClick={() => navigate(-1)}
+                    variant="contained"
+                    color="secondary"
+                    sx={{ mb: 2, borderRadius: 2, fontSize: '0.95rem', py: 0.5, px: 2 }}
+                >
+                    Back
+                </Button>
+                {/* Tournament Info Horizontal Card */}
+                <Paper elevation={1} sx={{ p: 2, borderRadius: 3, width: "100%", mb: 3, overflowX: "auto", display: "flex", alignItems: "center", minHeight: 80, background: 'rgba(255,255,255,0.93)' }}>
+                    <Typography variant="h5" fontWeight={700} color="primary" sx={{ minWidth: 160, mr: 3, fontSize: '1.35rem' }}>
+                        {tournament.name}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>Entry Fee:</strong> ₹{tournament.entryFee}
+                    <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+                    <Box sx={{ display: "flex", gap: 2, overflowX: "auto", width: "100%" }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>Team Limit:</strong> {tournament.teamLimit}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>Entry Fee:</strong> ₹{tournament.entryFee}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>Venue:</strong> {tournament.venue}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>Street:</strong> {tournament.street}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>City:</strong> {tournament.city}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>District:</strong> {tournament.district}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120, fontSize: '0.98rem' }}>
+                            <strong>State:</strong> {tournament.state}
+                        </Typography>
+                    </Box>
+                </Paper>
+                {/* Teams Card Below */}
+                <Paper elevation={1} sx={{ p: 2, borderRadius: 3, width: "100%", minHeight: 120, background: 'rgba(255,255,255,0.93)' }}>
+                    <Typography variant="subtitle1" fontWeight={700} color="text.secondary" mb={1.5} sx={{ fontSize: '1.08rem' }}>
+                        Teams
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>Venue:</strong> {tournament.venue}
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>Street:</strong> {tournament.street}
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>City:</strong> {tournament.city}
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>District:</strong> {tournament.district}
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ minWidth: 180 }}>
-                        <strong>State:</strong> {tournament.state}
-                    </Typography>
-                </Box>
-            </Paper>
-            {/* Teams Card Below */}
-            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, width: "100%", minHeight: 200 }}>
-                <Typography variant="h6" fontWeight={700} color="text.secondary" mb={2}>
-                    Teams
-                </Typography>
-                {tournament.teams && tournament.teams.length > 0 ? (
-                    <Grid container spacing={2}>
-                        {tournament.teams.map((team) => (
-                            <Grid item xs={12} key={team.id}>
-                                <Paper elevation={2} sx={{ p: 2, borderRadius: 2 }}>
-                                    <Typography variant="subtitle1" fontWeight={700} color="primary">
-                                        {team.teamName}
-                                    </Typography>
-                                    <Divider sx={{ my: 1 }} />
-                                    <ul style={{ marginLeft: 16, marginTop: 8 }}>
-                                        {team.players.map((player, index) => (
-                                            <li key={index} style={{ color: "#374151" }}>
-                                                <strong>{player.name}</strong> - <span style={{ fontStyle: "italic" }}>{player.roles.join(", ")}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </Paper>
+                    {tournament.teams && tournament.teams.length > 0 ? (
+                        <Box sx={{ maxHeight: 520, overflowY: 'auto', overflowX: 'auto', pr: 1, minWidth: 340 }}>
+                            <Grid container spacing={1.5} sx={{ minWidth: 500 }}>
+                                {tournament.teams.map((team) => (
+                                    <Grid item xs={12} key={team.id}>
+                                        <Paper elevation={2} sx={{ p: 1.5, borderRadius: 2, background: 'rgba(255,255,255,0.98)' }}>
+                                            <Typography variant="subtitle2" fontWeight={700} color="primary" sx={{ fontSize: '1.02rem' }}>
+                                                {team.teamName}
+                                            </Typography>
+                                            <Divider sx={{ my: 0.7 }} />
+                                            <ul style={{ marginLeft: 12, marginTop: 6, fontSize: '0.97rem', minWidth: 200, padding: 0 }}>
+                                                {team.players.map((player, index) => (
+                                                    <li key={index} style={{ color: "#374151", marginBottom: 4, listStyle: 'disc', marginLeft: 16 }}>
+                                                        <strong>{player.name}</strong> - <span style={{ fontStyle: "italic" }}>{player.roles.join(", ")}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </Paper>
+                                    </Grid>
+                                ))}
                             </Grid>
-                        ))}
-                    </Grid>
-                ) : (
-                    <Typography color="text.secondary">No teams registered yet.</Typography>
-                )}
+                        </Box>
+                    ) : (
+                        <Typography color="text.secondary" sx={{ fontSize: '0.98rem' }}>No teams registered yet.</Typography>
+                    )}
+                </Paper>
             </Paper>
         </Box>
     );

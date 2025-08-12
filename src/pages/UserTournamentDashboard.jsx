@@ -167,160 +167,172 @@ export default function UserTournamentDashboard() {
     };
 
     return (
-        <Box sx={{ bgcolor: "#f3f4f6", minHeight: "100vh", p: 4 }}>
-            <Grid container spacing={2} alignItems="flex-start" wrap="nowrap">
-                {/* Left Sidebar: Search & Filter */}
-                <Grid item sx={{ minWidth: 300, maxWidth: 340, flex: '0 0 320px' }}>
-                    <Paper elevation={3} sx={{ p: 3, borderRadius: 3, position: "sticky", top: 32, minWidth: 260, maxWidth: 340 }}>
-                        <Typography variant="h6" fontWeight={700} mb={2} color="text.secondary">
-                            Search & Filter
-                        </Typography>
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                            <Select
-                                options={stateOptions}
-                                onChange={handleStateChange}
-                                placeholder="Select State"
-                                isClearable
-                                className="w-full"
-                            />
-                            <Select
-                                options={districtOptions}
-                                onChange={handleDistrictChange}
-                                placeholder="Select District/City"
-                                isClearable
-                                isDisabled={!search.state}
-                                className="w-full"
-                            />
-                            <input
-                                name="city"
-                                value={search.city}
-                                onChange={handleSearchChange}
-                                placeholder="City"
-                                className="border p-2 rounded w-full"
-                            />
-                            <input
-                                name="maxFee"
-                                value={search.maxFee}
-                                onChange={handleSearchChange}
-                                placeholder="Max Entry Fee"
-                                type="number"
-                                className="border p-2 rounded w-full"
-                            />
-                            <input
-                                name="maxTeams"
-                                value={search.maxTeams}
-                                onChange={handleSearchChange}
-                                placeholder="Max Team Limit"
-                                type="number"
-                                className="border p-2 rounded w-full"
-                            />
-                            <Button
-                                onClick={handleApplyFilter}
-                                variant="contained"
-                                color="primary"
-                                sx={{ mt: 2, borderRadius: 2 }}
-                                fullWidth
-                            >
-                                Apply
-                            </Button>
-                        </Box>
-                    </Paper>
+        <Box sx={{
+            minHeight: '100vh',
+            p: 4,
+            backgroundImage: 'url(/assets/cricket-stadium-vector.jpg)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start'
+        }}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, minWidth: 340, maxWidth: 1200, width: '100%', background: 'rgba(255,255,255,0.88)', boxShadow: 4 }}>
+                <Grid container spacing={2} alignItems="flex-start" wrap="nowrap">
+                    {/* Left Sidebar: Search & Filter */}
+                    <Grid item sx={{ minWidth: 300, maxWidth: 340, flex: '0 0 320px' }}>
+                        <Paper elevation={1} sx={{ p: 3, borderRadius: 3, position: "sticky", top: 32, minWidth: 260, maxWidth: 340, background: 'rgba(255,255,255,0.93)' }}>
+                            <Typography variant="h6" fontWeight={700} mb={2} color="text.secondary">
+                                Search & Filter
+                            </Typography>
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <Select
+                                    options={stateOptions}
+                                    onChange={handleStateChange}
+                                    placeholder="Select State"
+                                    isClearable
+                                    className="w-full"
+                                />
+                                <Select
+                                    options={districtOptions}
+                                    onChange={handleDistrictChange}
+                                    placeholder="Select District/City"
+                                    isClearable
+                                    isDisabled={!search.state}
+                                    className="w-full"
+                                />
+                                <input
+                                    name="city"
+                                    value={search.city}
+                                    onChange={handleSearchChange}
+                                    placeholder="City"
+                                    className="border p-2 rounded w-full"
+                                />
+                                <input
+                                    name="maxFee"
+                                    value={search.maxFee}
+                                    onChange={handleSearchChange}
+                                    placeholder="Max Entry Fee"
+                                    type="number"
+                                    className="border p-2 rounded w-full"
+                                />
+                                <input
+                                    name="maxTeams"
+                                    value={search.maxTeams}
+                                    onChange={handleSearchChange}
+                                    placeholder="Max Team Limit"
+                                    type="number"
+                                    className="border p-2 rounded w-full"
+                                />
+                                <Button
+                                    onClick={handleApplyFilter}
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ mt: 2, borderRadius: 2 }}
+                                    fullWidth
+                                >
+                                    Apply
+                                </Button>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item sx={{ minWidth: 350, maxWidth: '100%', flex: '1 1 0' }}>
+                        <Card sx={{ height: '75vh', overflowY: 'auto', p: 2, borderRadius: 3, boxShadow: 3, minWidth: 320, maxWidth: '100%', background: 'rgba(255,255,255,0.93)' }}>
+                            <Typography variant="h5" fontWeight={700} mb={3} color="primary">
+                                Available Tournaments
+                            </Typography>
+                            <Grid container spacing={3}>
+                                {(filteredTournaments.length > 0
+                                    ? filteredTournaments
+                                    : (search.state || search.district || search.city || search.minFee || search.maxFee || search.minTeams || search.maxTeams)
+                                        ? []
+                                        : tournaments
+                                ).map((tournament) => (
+                                    <Grid item xs={12} md={6} lg={4} key={tournament.id}>
+                                        <Card
+                                            sx={{ cursor: "pointer", borderRadius: 3, boxShadow: 3, transition: "0.2s", '&:hover': { boxShadow: 6 }, background: 'rgba(255,255,255,0.98)' }}
+                                            onClick={() => handleTournamentClick(tournament)}
+                                        >
+                                            <CardContent>
+                                                <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
+                                                    {tournament.name}
+                                                </Typography>
+                                                <Divider sx={{ mb: 2 }} />
+                                                <Chip label={`Team Limit: ${tournament.teamLimit}`} color="info" sx={{ mr: 1, mb: 1 }} />
+                                                <Chip label={`Entry Fee: ₹${tournament.entryFee}`} color="success" sx={{ mb: 1 }} />
+                                                <Typography variant="body2" color="text.secondary" mt={2}>
+                                                    <strong>Venue:</strong> {tournament.venue}<br />
+                                                    <strong>Street:</strong> {tournament.street}<br />
+                                                    <strong>City:</strong> {tournament.city}<br />
+                                                    <strong>District:</strong> {tournament.district}<br />
+                                                    <strong>State:</strong> {tournament.state}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Button
+                                                    onClick={(e) => { e.stopPropagation(); handleRegisterClick(tournament.id, tournament.entryFee); }}
+                                                    variant="contained"
+                                                    color="success"
+                                                    sx={{ borderRadius: 2 }}
+                                                >
+                                                    Register
+                                                </Button>
+                                                <Button
+                                                    onClick={(e) => { e.stopPropagation(); handleRegisterWithExistingTeam(tournament); }}
+                                                    variant="outlined"
+                                                    color="primary"
+                                                    sx={{ borderRadius: 2 }}
+                                                >
+                                                    Register with Existing Team
+                                                </Button>
+                                                <Button
+                                                    onClick={(e) => { e.stopPropagation(); handleViewScheduleClick(tournament.id); }}
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    sx={{ borderRadius: 2 }}
+                                                >
+                                                    View Schedule
+                                                </Button>
+                                            </CardActions>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                                {(filteredTournaments.length === 0 &&
+                                    (search.state || search.district || search.city || search.minFee || search.maxFee || search.minTeams || search.maxTeams)) && (
+                                    <Grid item xs={12}>
+                                        <Paper elevation={0} sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
+                                            No tournaments found for the selected filters.
+                                        </Paper>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        </Card>
+                    </Grid>
                 </Grid>
-                <Grid item sx={{ minWidth: 350, maxWidth: '100%', flex: '1 1 0' }}>
-                    <Card sx={{ height: '75vh', overflowY: 'auto', p: 2, borderRadius: 3, boxShadow: 3, minWidth: 320, maxWidth: '100%' }}>
-                        <Typography variant="h5" fontWeight={700} mb={3} color="primary">
-                            Available Tournaments
-                        </Typography>
-                        <Grid container spacing={3}>
-                            {(filteredTournaments.length > 0
-                                ? filteredTournaments
-                                : (search.state || search.district || search.city || search.minFee || search.maxFee || search.minTeams || search.maxTeams)
-                                    ? []
-                                    : tournaments
-                            ).map((tournament) => (
-                                <Grid item xs={12} md={6} lg={4} key={tournament.id}>
-                                    <Card
-                                        sx={{ cursor: "pointer", borderRadius: 3, boxShadow: 3, transition: "0.2s", '&:hover': { boxShadow: 6 } }}
-                                        onClick={() => handleTournamentClick(tournament)}
-                                    >
-                                        <CardContent>
-                                            <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
-                                                {tournament.name}
-                                            </Typography>
-                                            <Divider sx={{ mb: 2 }} />
-                                            <Chip label={`Team Limit: ${tournament.teamLimit}`} color="info" sx={{ mr: 1, mb: 1 }} />
-                                            <Chip label={`Entry Fee: ₹${tournament.entryFee}`} color="success" sx={{ mb: 1 }} />
-                                            <Typography variant="body2" color="text.secondary" mt={2}>
-                                                <strong>Venue:</strong> {tournament.venue}<br />
-                                                <strong>Street:</strong> {tournament.street}<br />
-                                                <strong>City:</strong> {tournament.city}<br />
-                                                <strong>District:</strong> {tournament.district}<br />
-                                                <strong>State:</strong> {tournament.state}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <Button
-                                                onClick={(e) => { e.stopPropagation(); handleRegisterClick(tournament.id, tournament.entryFee); }}
-                                                variant="contained"
-                                                color="success"
-                                                sx={{ borderRadius: 2 }}
-                                            >
-                                                Register
-                                            </Button>
-                                            <Button
-                                                onClick={(e) => { e.stopPropagation(); handleRegisterWithExistingTeam(tournament); }}
-                                                variant="outlined"
-                                                color="primary"
-                                                sx={{ borderRadius: 2 }}
-                                            >
-                                                Register with Existing Team
-                                            </Button>
-                                            <Button
-                                                onClick={(e) => { e.stopPropagation(); handleViewScheduleClick(tournament.id); }}
-                                                variant="contained"
-                                                color="secondary"
-                                                sx={{ borderRadius: 2 }}
-                                            >
-                                                View Schedule
-                                            </Button>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
+                <Dialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)}>
+                    <DialogTitle>Register with Existing Team</DialogTitle>
+                    <DialogContent>
+                        <MuiSelect
+                            value={selectedTeamId}
+                            onChange={e => setSelectedTeamId(e.target.value)}
+                            fullWidth
+                            displayEmpty
+                        >
+                            <MenuItem value="" disabled>Select your team</MenuItem>
+                            {myTeams.map(team => (
+                                <MenuItem key={team.id} value={team.id}>
+                                    {team.teamName} (ID: {team.id})
+                                </MenuItem>
                             ))}
-                            {(filteredTournaments.length === 0 &&
-                                (search.state || search.district || search.city || search.minFee || search.maxFee || search.minTeams || search.maxTeams)) && (
-                                <Grid item xs={12}>
-                                    <Paper elevation={0} sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
-                                        No tournaments found for the selected filters.
-                                    </Paper>
-                                </Grid>
-                            )}
-                        </Grid>
-                    </Card>
-                </Grid>
-            </Grid>
-            <Dialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)}>
-                <DialogTitle>Register with Existing Team</DialogTitle>
-                <DialogContent>
-                    <MuiSelect
-                        value={selectedTeamId}
-                        onChange={e => setSelectedTeamId(e.target.value)}
-                        fullWidth
-                        displayEmpty
-                    >
-                        <MenuItem value="" disabled>Select your team</MenuItem>
-                        {myTeams.map(team => (
-                            <MenuItem key={team.id} value={team.id}>
-                                {team.teamName} (ID: {team.id})
-                            </MenuItem>
-                        ))}
-                    </MuiSelect>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setRegisterDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleExistingTeamRegister} variant="contained" disabled={!selectedTeamId}>Register</Button>
-                </DialogActions>
-            </Dialog>
+                        </MuiSelect>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setRegisterDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleExistingTeamRegister} variant="contained" disabled={!selectedTeamId}>Register</Button>
+                    </DialogActions>
+                </Dialog>
+            </Paper>
         </Box>
     );
 }

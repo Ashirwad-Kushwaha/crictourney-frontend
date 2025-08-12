@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { schedulerApi } from "../services/api";
 import toast, { Toaster } from "react-hot-toast";
 import { getUser } from "../auth"; // Import getUser to check user role
-import { Box } from "@mui/material";
+import { Box, Typography, Paper, List, ListItem, ListItemText, CircularProgress } from "@mui/material";
 
 export default function ViewSchedule() {
     const [schedule, setSchedule] = useState([]);

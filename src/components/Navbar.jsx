@@ -28,7 +28,7 @@ export default function Navbar() {
                     </>
                 ) : (
                     <>
-                        <span className="mr-2">Hello, {user.sub}</span>
+                        <span className="mr-2">Hello, {user.username}</span>
                         <button onClick={logout} className="bg-white text-blue-600 px-2 py-1 rounded">Logout</button>
                         <button
                             onClick={() => navigate("/payment-history")}
