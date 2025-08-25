@@ -1,20 +1,22 @@
 import axios from "axios";
 import { getToken } from "../auth";
 
+const BASE_URL = "http://localhost:8765";
+
 const userApi = axios.create({
-    baseURL: "http://localhost:8080/api", // User Service
+    baseURL: `${BASE_URL}/api`,
 });
 
 const tournamentApi = axios.create({
-    baseURL: "http://localhost:8082", // Tournament Service
+    baseURL: BASE_URL,
 });
 
 const teamApi = axios.create({
-    baseURL: "http://localhost:8083", // Team Service
+    baseURL: BASE_URL,
 });
 
 const schedulerApi = axios.create({
-    baseURL: "http://localhost:8084", // Replace with the actual SchedulerService base URL
+    baseURL: BASE_URL,
 });
 
 [userApi, tournamentApi, teamApi, schedulerApi].forEach((api) => {

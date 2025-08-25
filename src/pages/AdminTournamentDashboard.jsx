@@ -278,25 +278,25 @@ export default function AdminTournamentDashboard() {
                     </Grid>
                     {/* Right Main Content: Tournaments */}
                     <Grid item sx={{ minWidth: 350, maxWidth: '100%', flex: '1 1 0' }}>
-                        <Card sx={{ height: '75vh', overflowY: 'auto', p: 2, borderRadius: 3, boxShadow: 3, minWidth: 320, maxWidth: '100%', background: 'rgba(255,255,255,0.93)' }}>
-                            <Typography variant="h5" fontWeight={700} mb={3} color="primary">
+                        <Card sx={{ height: '85vh', overflowY: 'auto', p: 3, borderRadius: 3, boxShadow: 3, minWidth: 400, maxWidth: '100%', background: 'rgba(255,255,255,0.93)' }}>
+                            <Typography variant="h5" fontWeight={700} mb={3} color="primary" sx={{ fontSize: '1.5rem' }}>
                                 Tournaments
                             </Typography>
                             <Grid container spacing={3}>
                                 {tournaments.map((tournament) => (
                                     <Grid item xs={12} md={6} lg={4} key={tournament.id}>
                                         <Card
-                                            sx={{ borderRadius: 3, boxShadow: 3, transition: "0.2s", cursor: "pointer", '&:hover': { boxShadow: 6 }, background: 'rgba(255,255,255,0.98)' }}
+                                            sx={{ borderRadius: 3, boxShadow: 3, transition: "0.2s", cursor: "pointer", '&:hover': { boxShadow: 6 }, background: 'rgba(255,255,255,0.98)', minHeight: 260, minWidth: 340, p: 1 }}
                                             onClick={() => handleTournamentClick(tournament)}
                                         >
                                             <CardContent>
-                                                <Typography variant="h6" fontWeight={700} color="primary" gutterBottom>
+                                                <Typography variant="h6" fontWeight={700} color="primary" gutterBottom sx={{ fontSize: '1.1rem' }}>
                                                     {tournament.name}
                                                 </Typography>
                                                 <Divider sx={{ mb: 2 }} />
-                                                <Chip label={`Team Limit: ${tournament.teamLimit}`} color="info" sx={{ mr: 1, mb: 1 }} />
-                                                <Chip label={`Entry Fee: ₹${tournament.entryFee}`} color="success" sx={{ mb: 1 }} />
-                                                <Typography variant="body2" color="text.secondary" mt={2}>
+                                                <Chip label={`Team Limit: ${tournament.teamLimit}`} color="info" sx={{ mr: 1, mb: 1, fontSize: '0.85rem' }} />
+                                                <Chip label={`Entry Fee: ₹${tournament.entryFee}`} color="success" sx={{ mb: 1, fontSize: '0.85rem' }} />
+                                                <Typography variant="body2" color="text.secondary" mt={2} sx={{ fontSize: '0.95rem' }}>
                                                     <strong>Venue:</strong> {tournament.venue}<br />
                                                     <strong>Street:</strong> {tournament.street}<br />
                                                     <strong>City:</strong> {tournament.city}<br />
@@ -314,7 +314,7 @@ export default function AdminTournamentDashboard() {
                                                     }}
                                                     variant="contained"
                                                     color="success"
-                                                    sx={{ borderRadius: 2 }}
+                                                    sx={{ borderRadius: 2, fontSize: '0.95rem', px: 2 }}
                                                 >
                                                     Register Team
                                                 </Button>
@@ -326,7 +326,7 @@ export default function AdminTournamentDashboard() {
                                                     }}
                                                     variant="outlined"
                                                     color="primary"
-                                                    sx={{ borderRadius: 2 }}
+                                                    sx={{ borderRadius: 2, fontSize: '0.95rem', px: 2 }}
                                                 >
                                                     Register with Existing Team
                                                 </Button>
@@ -337,7 +337,7 @@ export default function AdminTournamentDashboard() {
                                                     }}
                                                     variant="contained"
                                                     color="primary"
-                                                    sx={{ borderRadius: 2 }}
+                                                    sx={{ borderRadius: 2, fontSize: '0.95rem', px: 2 }}
                                                 >
                                                     Create Schedule
                                                 </Button>
@@ -349,7 +349,7 @@ export default function AdminTournamentDashboard() {
                                                     }}
                                                     variant="contained"
                                                     color="secondary"
-                                                    sx={{ borderRadius: 2 }}
+                                                    sx={{ borderRadius: 2, fontSize: '0.95rem', px: 2 }}
                                                 >
                                                     View Schedule
                                                 </Button>
@@ -360,7 +360,7 @@ export default function AdminTournamentDashboard() {
                                                     }}
                                                     variant="contained"
                                                     color="error"
-                                                    sx={{ borderRadius: 2 }}
+                                                    sx={{ borderRadius: 2, fontSize: '0.95rem', px: 2 }}
                                                 >
                                                     Delete
                                                 </Button>
