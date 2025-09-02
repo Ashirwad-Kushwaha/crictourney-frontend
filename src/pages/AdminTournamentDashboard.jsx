@@ -73,6 +73,7 @@ export default function AdminTournamentDashboard() {
             const res = await tournamentApi.get("/tournament/all");
             setTournaments(res.data);
         } catch (err) {
+            console.error("Failed to fetch tournaments:", err);
             toast.error("Failed to fetch tournaments");
         }
     };
@@ -106,6 +107,7 @@ export default function AdminTournamentDashboard() {
             toast.success("Tournament created successfully!");
             fetchTournaments();
         } catch (err) {
+            console.error("Tournament creation failed:", err);
             toast.error("Failed to create tournament");
         }
     };
@@ -116,6 +118,7 @@ export default function AdminTournamentDashboard() {
             toast.success("Tournament deleted successfully!");
             fetchTournaments();
         } catch (err) {
+            console.error("Tournament deletion failed:", err);
             toast.error("Failed to delete tournament");
         }
     };
@@ -136,6 +139,7 @@ export default function AdminTournamentDashboard() {
             toast.success("Schedule created successfully!");
             navigate(`/view-schedule?tournamentId=${tournamentId}`); // Navigate to ViewSchedule page
         } catch (err) {
+            console.error("Schedule creation failed:", err);
             toast.error("Failed to create schedule");
         }
     };

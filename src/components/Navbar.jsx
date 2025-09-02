@@ -21,6 +21,7 @@ export default function Navbar() {
                 />
             </Link>
             <div className="flex items-center">
+                <Link to="/help" className="mx-2 px-3 py-1 bg-blue-500 hover:bg-blue-400 rounded transition-colors">Help</Link>
                 {!user ? (
                     <>
                         <Link to="/login" className="mx-2">Login</Link>

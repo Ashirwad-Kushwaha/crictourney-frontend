@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminTournamentDashboard from "./pages/AdminTournamentDashboard";
@@ -8,6 +9,8 @@ import RegisterTeam from "./pages/RegisterTeam";
 import CreateSchedule from "./pages/CreateSchedule";
 import ViewSchedule from "./pages/ViewSchedule";
 import Navbar from "./components/Navbar";
+import RAGWidget from "./components/RAGWidget";
+import HelpCenter from "./pages/HelpCenter";
 import { getUser } from "./auth";
 import { Box } from "@mui/material";
 import bgImage from "./assets/cricket-stadium-vector.jpg";
@@ -33,6 +36,32 @@ function ProtectedRoute({ children, role }) {
     return children;
 }
 
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+    role: PropTypes.string
+};
+
+function RootRedirect({ user, email }) {
+    if (user) {
+        if (user.role === "ADMIN") {
+            const adminPath = "/admin" + (email ? "?email=" + email : "");
+            return <Navigate to={adminPath} replace />;
+        } else if (user.role === "USER") {
+            const userPath = "/user" + (email ? "?email=" + email : "");
+            return <Navigate to={userPath} replace />;
+        } else {
+            return <Navigate to="/login" replace />;
+        }
+    } else {
+        return <Navigate to="/login" replace />;
+    }
+}
+
+RootRedirect.propTypes = {
+    user: PropTypes.object,
+    email: PropTypes.string
+};
+
 function App() {
     const user = getUser();
     // Get email from URL if present
@@ -53,19 +82,7 @@ function App() {
                 <Routes>
                     <Route
                         path="/"
-                        element={
-                            user ? (
-                                user.role === "ADMIN" ? (
-                                    <Navigate to={`/admin${email ? `?email=${email}` : ""}`} replace />
-                                ) : user.role === "USER" ? (
-                                    <Navigate to={`/user${email ? `?email=${email}` : ""}`} replace />
-                                ) : (
-                                    <Navigate to={`/login`} replace />
-                                )
-                            ) : (
-                                <Navigate to={`/login`} replace />
-                            )
-                        }
+                        element={<RootRedirect user={user} email={email} />}
                     />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
@@ -80,7 +97,9 @@ function App() {
                     <Route path="/my-teams" element={<ProtectedRoute><MyTeams /></ProtectedRoute>} />
                     <Route path="/my-team/:teamId" element={<ProtectedRoute><ViewTeam /></ProtectedRoute>} />
                     <Route path="/edit-team/:teamId" element={<ProtectedRoute><EditTeam /></ProtectedRoute>} />
+                    <Route path="/help" element={<HelpCenter />} />
                 </Routes>
+                <RAGWidget />
             </BrowserRouter>
         </Box>
     );

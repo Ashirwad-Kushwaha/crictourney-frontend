@@ -1,0 +1,6 @@
+projectKey=Ashirwad-Kushwaha_crictourney-frontend
+serverUrl=http://127.0.0.1:9090
+serverVersion=25.8.0.112029
+dashboardUrl=http://127.0.0.1:9090/dashboard?id=Ashirwad-Kushwaha_crictourney-frontend
+ceTaskId=39295b0d-afbd-4db9-864b-93505796d39c
+ceTaskUrl=http://127.0.0.1:9090/api/ce/task?id=39295b0d-afbd-4db9-864b-93505796d39c

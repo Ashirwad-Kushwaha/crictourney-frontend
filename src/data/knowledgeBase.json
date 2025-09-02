@@ -1,0 +1,144 @@
+{
+  "knowledgeBase": [
+    {
+      "id": "overview",
+      "title": "CricTourney Overview",
+      "content": "CricTourney is a comprehensive cricket tournament management platform built with microservices architecture. It allows users to create tournaments, register teams, manage players, process payments, and schedule matches. The platform is designed for cricket enthusiasts, tournament organizers, team captains, and players who want a seamless tournament experience.",
+      "category": "general",
+      "keywords": ["overview", "platform", "cricket", "tournament", "management", "crictourney", "what", "is", "about"]
+    },
+    {
+      "id": "architecture",
+      "title": "System Architecture",
+      "content": "The system uses microservices architecture with 6 main services: UserAuthService (8081) for authentication and user management, TeamService (8082) for team operations, TournamentService (8083) for tournament management, EmailService (8084) for notifications, PaymentGateway (8085) for payment processing, and SchedulerService (8086) for match scheduling. Frontend runs on React with Vite on port 5173. All services communicate via REST APIs and use JWT for authentication.",
+      "category": "technical",
+      "keywords": ["architecture", "microservices", "services", "ports", "react", "vite", "system", "design", "backend", "frontend"]
+    },
+    {
+      "id": "authentication",
+      "title": "Authentication System",
+      "content": "JWT token-based authentication with role-based access control. Roles include ADMIN (full access to all features), ORGANIZER (tournament management capabilities), CAPTAIN (team management and player operations), and USER (basic access for participation). Tokens contain user_id, role, username, and expiration time. Authentication is required for all protected routes and API endpoints.",
+      "category": "security",
+      "keywords": ["authentication", "jwt", "roles", "admin", "organizer", "captain", "user", "security", "login", "token", "access"]
+    },
+    {
+      "id": "team-management",
+      "title": "Team Management",
+      "content": "Teams can be registered for tournaments with captain assignment and player roster management. Players can be added to teams with specific positions (batsman, bowler, all-rounder, wicket-keeper). Payment integration via Razorpay for entry fees with secure transaction processing. Team verification process ensures data integrity. Captains can edit team details, add/remove players, and manage team participation in multiple tournaments.",
+      "category": "features",
+      "keywords": ["team", "registration", "captain", "players", "payment", "razorpay", "entry", "fee", "roster", "positions", "manage"]
+    },
+    {
+      "id": "tournament-features",
+      "title": "Tournament Features",
+      "content": "Create tournaments with different formats (knockout, round-robin, league), set entry fees, manage team registrations, automated match scheduling, and tournament brackets. Status tracking from creation to completion with real-time updates. Tournament organizers can set rules, manage venues, track payments, and generate reports. Support for multiple tournament types and custom scoring systems.",
+      "category": "features",
+      "keywords": ["tournament", "create", "format", "scheduling", "brackets", "matches", "knockout", "league", "organizer", "venues"]
+    },
+    {
+      "id": "create-tournament-steps",
+      "title": "How to Create Tournament",
+      "content": "To create a tournament: 1) Login as ADMIN role, 2) Access Admin Dashboard from navigation, 3) Use the 'Create a New Tournament' form on the left sidebar, 4) Fill required fields: Tournament Name, Team Limit (number of teams), Entry Fee (amount in rupees), Venue details including Street, State, District, City, and Pincode, 5) Click 'Create Tournament' button, 6) Tournament is created and becomes visible to users for team registration. You can then create schedules, manage registrations, and track tournament progress.",
+      "category": "tutorial",
+      "keywords": ["create", "tournament", "how", "steps", "admin", "form", "name", "limit", "fee", "venue", "dashboard"]
+    },
+    {
+      "id": "team-registration-steps",
+      "title": "How to Register Team",
+      "content": "To register a team: 1) Login as CAPTAIN or create account with CAPTAIN role, 2) Navigate to 'Register Team' from dashboard or tournament page, 3) Fill team details: Team Name, Captain information, 4) Add players with their positions and contact details, 5) Select tournament to register for, 6) Complete payment via Razorpay for entry fee, 7) Submit registration and wait for verification. Once verified, your team can participate in matches.",
+      "category": "tutorial",
+      "keywords": ["register", "team", "how", "captain", "players", "payment", "verification", "participate"]
+    },
+    {
+      "id": "payment-system",
+      "title": "Payment Integration",
+      "content": "Integrated with Razorpay for secure payment processing. Handles entry fee payments with multiple payment methods (cards, UPI, wallets), order creation with unique transaction IDs, payment verification with webhooks, and comprehensive payment history tracking. All transactions are encrypted and PCI compliant. Users can view payment history, download receipts, and track refunds if applicable.",
+      "category": "features",
+      "keywords": ["payment", "razorpay", "entry", "fee", "order", "verification", "history", "transaction", "secure", "receipt"]
+    },
+    {
+      "id": "email-notifications",
+      "title": "Email Notifications",
+      "content": "Automated email notifications for user registration confirmation, team verification status, tournament updates and announcements, match schedules and reminders, payment confirmations and receipts, and tournament results via SMTP integration. Users can customize notification preferences and receive timely updates about their tournaments and teams.",
+      "category": "features",
+      "keywords": ["email", "notifications", "smtp", "registration", "verification", "updates", "schedule", "reminders", "results"]
+    },
+    {
+      "id": "match-scheduling",
+      "title": "Match Scheduling System",
+      "content": "Automated match scheduling with conflict detection and venue management. The SchedulerService creates optimal match schedules considering team availability, venue capacity, and tournament format. Supports different tournament types with appropriate bracket generation. Real-time schedule updates and notifications to teams and players.",
+      "category": "features",
+      "keywords": ["schedule", "matches", "automated", "conflict", "venue", "bracket", "timing", "calendar", "availability"]
+    },
+    {
+      "id": "database-design",
+      "title": "Database Structure",
+      "content": "MySQL database with separate schemas per microservice for data isolation. Main entities include Users (authentication and profiles), Teams (team information and rosters), Players (individual player data), Tournaments (tournament details and settings), Matches (match information and results), PaymentHistory (transaction records), and Schedules (match timing and venues). Relational design with proper foreign key constraints and indexing for performance.",
+      "category": "technical",
+      "keywords": ["database", "mysql", "schemas", "users", "teams", "tournaments", "matches", "players", "relations", "performance"]
+    },
+    {
+      "id": "api-endpoints",
+      "title": "API Endpoints",
+      "content": "RESTful APIs with comprehensive Swagger documentation. Key endpoints include: /api/auth/login (user authentication), /api/auth/register (user registration), /teams/register (team registration), /teams/my (user's teams), /tournament/create (create tournament), /tournament/all (list tournaments), /schedule/{tournamentId} (tournament schedule), /api/payments/create-order (payment processing). All endpoints require JWT authentication except public registration and login.",
+      "category": "technical",
+      "keywords": ["api", "rest", "swagger", "endpoints", "login", "register", "create", "schedule", "documentation", "jwt"]
+    },
+    {
+      "id": "frontend-tech",
+      "title": "Frontend Technology Stack",
+      "content": "React application with Vite build tool for fast development and building. Uses Material-UI components for consistent design, Tailwind CSS for custom styling, React Router for client-side navigation, Axios for HTTP API calls, JWT decode for authentication token handling, React Hot Toast for notifications, and React Select for enhanced form controls. Responsive design works on desktop and mobile devices.",
+      "category": "technical",
+      "keywords": ["react", "vite", "material-ui", "tailwind", "router", "axios", "frontend", "responsive", "mobile", "notifications"]
+    },
+    {
+      "id": "user-roles",
+      "title": "User Roles and Permissions",
+      "content": "ADMIN: Full system access, can create tournaments, manage all teams, view all data, and system administration. ORGANIZER: Can create and manage tournaments, view registered teams, create schedules, and manage tournament operations. CAPTAIN: Can register teams, manage team roster, add/remove players, register for tournaments, and view team statistics. USER: Basic access to view tournaments, join teams as players, and participate in matches.",
+      "category": "security",
+      "keywords": ["roles", "permissions", "admin", "organizer", "captain", "user", "access", "manage", "view", "participate"]
+    },
+    {
+      "id": "tournament-formats",
+      "title": "Tournament Formats",
+      "content": "Supports multiple tournament formats: Knockout (single elimination), Round Robin (all teams play each other), League format (group stages followed by playoffs), and Custom formats. Each format has specific scheduling algorithms and bracket generation. Tournament organizers can choose format based on number of teams, time constraints, and competition requirements.",
+      "category": "features",
+      "keywords": ["format", "knockout", "round", "robin", "league", "elimination", "playoff", "bracket", "competition", "algorithm"]
+    },
+    {
+      "id": "venue-management",
+      "title": "Venue Management",
+      "content": "Comprehensive venue management system with location details including street address, city, district, state, and pincode. Venue capacity tracking, availability scheduling, and conflict resolution. Integration with mapping services for directions. Venue booking and management for tournament organizers with real-time availability updates.",
+      "category": "features",
+      "keywords": ["venue", "location", "address", "capacity", "booking", "availability", "mapping", "directions", "management"]
+    },
+    {
+      "id": "reporting-analytics",
+      "title": "Reporting and Analytics",
+      "content": "Comprehensive reporting system with tournament statistics, team performance analytics, player statistics, payment reports, and participation metrics. Exportable reports in various formats. Real-time dashboards for tournament organizers and team captains with key performance indicators and progress tracking.",
+      "category": "features",
+      "keywords": ["reports", "analytics", "statistics", "performance", "metrics", "dashboard", "export", "tracking", "indicators"]
+    },
+    {
+      "id": "mobile-responsive",
+      "title": "Mobile Responsive Design",
+      "content": "Fully responsive web application that works seamlessly on desktop, tablet, and mobile devices. Touch-friendly interface with optimized layouts for different screen sizes. Mobile-first design approach ensures excellent user experience across all devices. Progressive Web App (PWA) capabilities for offline access and app-like experience.",
+      "category": "technical",
+      "keywords": ["mobile", "responsive", "tablet", "desktop", "touch", "pwa", "offline", "screen", "layout", "experience"]
+    },
+    {
+      "id": "security-features",
+      "title": "Security Features",
+      "content": "Comprehensive security implementation with JWT token authentication, password hashing with bcrypt, SQL injection prevention, XSS protection, CORS configuration, rate limiting, input validation and sanitization, secure payment processing with PCI compliance, and regular security audits. All sensitive data is encrypted in transit and at rest.",
+      "category": "security",
+      "keywords": ["security", "jwt", "encryption", "hashing", "injection", "xss", "cors", "validation", "pci", "audit"]
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Common Issues and Solutions",
+      "content": "Common issues and solutions: Login problems (check credentials and account status), Payment failures (verify payment method and try again), Team registration issues (ensure all required fields are filled), Schedule conflicts (contact tournament organizer), Email notifications not received (check spam folder and email settings), and Performance issues (clear browser cache and check internet connection).",
+      "category": "support",
+      "keywords": ["troubleshooting", "issues", "problems", "login", "payment", "registration", "schedule", "email", "performance", "solutions"]
+    }
+  ]
+}
