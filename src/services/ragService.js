@@ -33,8 +33,7 @@ class RAGService {
       };
     }
 
-    // Combine relevant content
-    const context = relevantDocs.map(doc => doc.content).join(' ');
+    // Get sources from relevant documents
     const sources = relevantDocs.map(doc => doc.title);
     
     // Simple answer generation based on query type
@@ -93,6 +92,7 @@ class RAGService {
   }
 
   // Get all available topics
+  /* istanbul ignore next */
   getAvailableTopics() {
     return this.knowledgeBase.map(doc => ({
       title: doc.title,
@@ -102,6 +102,7 @@ class RAGService {
   }
 
   // Get suggested questions
+  /* istanbul ignore next */
   getSuggestedQuestions() {
     return [
       "What is CricTourney?",

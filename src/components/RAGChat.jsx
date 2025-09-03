@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Send, Bot, User, Lightbulb, HelpCircle, Maximize2 } from 'lucide-react';
+import { Send, Bot, User, Lightbulb, HelpCircle, Maximize2, Minimize2, X } from 'lucide-react';
 import ragService from '../services/ragService';
 
-const RAGChat = forwardRef((props, ref) => {
+const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: 'bot',
-      content: 'Hi! I\'m your CricTourney assistant. Ask me anything about our cricket tournament management platform!',
+      content: 'Hi! Ask me anything about our cricket tournament management platform!',
       timestamp: new Date()
     }
   ]);
@@ -87,18 +87,20 @@ const RAGChat = forwardRef((props, ref) => {
     setShowSuggestions(false);
 
     try {
-      const response = await ragService.query(message);
+      const response = ragService.query(message);
       
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
         content: response.answer,
         sources: response.sources,
-        timestamp: new Date()
+        timestamp: new Date(),
+        showSuggestions: true
       };
 
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
+      console.error('RAG service error:', error);
       const errorMessage = {
         id: Date.now() + 1,
         type: 'bot',
@@ -132,9 +134,28 @@ const RAGChat = forwardRef((props, ref) => {
       <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Bot size={20} />
-          <h3 className="font-semibold">CricTourney Assistant</h3>
+          <h3 className="font-semibold">CricTourney Help</h3>
         </div>
-        <Maximize2 size={16} className="opacity-70" />
+        {showControls ? (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onMinimize}
+              className="hover:bg-blue-700 p-1 rounded transition-colors"
+              aria-label="Minimize"
+            >
+              <Minimize2 size={16} />
+            </button>
+            <button
+              onClick={onClose}
+              className="hover:bg-blue-700 p-1 rounded transition-colors"
+              aria-label="Close"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <Maximize2 size={16} className="opacity-70" />
+        )}
       </div>
 
       {/* Messages */}
@@ -160,10 +181,26 @@ const RAGChat = forwardRef((props, ref) => {
                     <div className="mt-2 text-xs opacity-75">
                       <p className="font-semibold">Sources:</p>
                       <ul className="list-disc list-inside">
-                        {message.sources.map((source, index) => (
-                          <li key={index}>{source}</li>
+                        {message.sources.map((source) => (
+                          <li key={`${message.id}-${source}`}>{source}</li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+                  {message.type === 'bot' && message.showSuggestions && (
+                    <div className="mt-3 space-y-1">
+                      <div className="text-xs opacity-75 font-semibold">Ask more:</div>
+                      <div className="grid grid-cols-1 gap-1">
+                        {suggestions.slice(0, 3).map((suggestion) => (
+                          <button
+                            key={suggestion}
+                            onClick={() => handleSendMessage(suggestion)}
+                            className="text-left p-1 text-xs bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                   <p className="text-xs opacity-75 mt-1">{formatTime(message.timestamp)}</p>
@@ -196,9 +233,9 @@ const RAGChat = forwardRef((props, ref) => {
               <span>Try asking:</span>
             </div>
             <div className="grid grid-cols-1 gap-2">
-              {suggestions.map((suggestion, index) => (
+              {suggestions.map((suggestion) => (
                 <button
-                  key={index}
+                  key={suggestion}
                   onClick={() => handleSendMessage(suggestion)}
                   className="text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors"
                 >
@@ -236,12 +273,13 @@ const RAGChat = forwardRef((props, ref) => {
       </div>
       
       {/* Resize Handle */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize bg-gray-200 hover:bg-gray-300 transition-colors flex items-center justify-center"
+      <button 
+        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize bg-gray-200 hover:bg-gray-300 transition-colors flex items-center justify-center border-0 p-0"
         onMouseDown={handleMouseDown}
+        aria-label="Resize chat window"
       >
         <div className="w-8 h-1 bg-gray-400 rounded"></div>
-      </div>
+      </button>
     </div>
   );
 });

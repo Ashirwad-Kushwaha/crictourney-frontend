@@ -11,7 +11,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
+        <nav className="bg-blue-600 text-white p-4 flex justify-between items-center relative z-50">
             {/* Clickable Logo */}
             <Link to="/">
                 <img

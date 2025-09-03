@@ -1,27 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import RAGChat from '../components/RAGChat';
-import ragService from '../services/ragService';
 import bgImage from '../assets/cricket-stadium-vector.jpg';
 
 const HelpCenter = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const chatRef = useRef(null);
-  
-  const topics = ragService.getAvailableTopics();
-  const categories = ['all', ...new Set(topics.map(topic => topic.category))];
-
-  const filteredTopics = selectedCategory === 'all' 
-    ? topics 
-    : topics.filter(topic => topic.category === selectedCategory);
 
   const handleQuickAction = (query) => {
-    if (chatRef.current) {
-      chatRef.current.sendMessage(query);
-    }
-  };
-
-  const handleTopicClick = (topic) => {
-    const query = `Tell me about ${topic.title}`;
     if (chatRef.current) {
       chatRef.current.sendMessage(query);
     }
@@ -73,29 +57,51 @@ const HelpCenter = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Quick Actions & Topics */}
+          {/* Left Column - About & Technologies */}
           <div className="space-y-6">
-            {/* Quick Actions */}
+            {/* About CricTourney */}
             <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-cricket-green mb-6">Quick Actions</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {quickActions.map((action, index) => (
-                  <div 
-                    key={index}
-                    className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-gray-100"
-                    onClick={() => handleQuickAction(action.query)}
-                  >
-                    <div className="text-center">
-                      <div className="text-3xl mb-2">{action.icon}</div>
-                      <h3 className="font-semibold text-gray-900 mb-1">{action.title}</h3>
-                      <p className="text-sm text-gray-600">{action.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h2 className="text-2xl font-bold text-cricket-green mb-6">About CricTourney</h2>
+              <p className="text-gray-700 mb-4">
+                CricTourney is a comprehensive cricket tournament management platform designed to streamline the organization and management of cricket tournaments. Our platform provides role-based access control, team management, match scheduling, and payment processing.
+              </p>
+              <p className="text-gray-700">
+                Whether you're an administrator organizing tournaments or a team captain registering your squad, CricTourney offers an intuitive interface with powerful features to manage every aspect of cricket tournaments efficiently.
+              </p>
             </div>
 
-
+            {/* Technologies & Tools */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+              <h3 className="text-xl font-bold text-cricket-green mb-4">Technologies & Tools</h3>
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-2">Frontend</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">React 19</span>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Vite</span>
+                    <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm">Material-UI</span>
+                    <span className="px-3 py-1 bg-cyan-100 text-cyan-800 rounded-full text-sm">Tailwind CSS</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-2">Backend & APIs</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Spring Boot</span>
+                    <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">JWT Auth</span>
+                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">Razorpay</span>
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Axios</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-2">AI & Tools</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm">RAG System</span>
+                    <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">Jest Testing</span>
+                    <span className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm">ESLint</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right Column - RAG Chat */}
@@ -107,10 +113,10 @@ const HelpCenter = () => {
                   Get instant, detailed answers about CricTourney features, setup, and usage.
                 </p>
               </div>
-              <RAGChat ref={chatRef} />
+              <div className="min-h-[400px]">
+                <RAGChat ref={chatRef} />
+              </div>
             </div>
-
-
           </div>
         </div>
       </div>
