@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Send, Bot, User, Lightbulb, HelpCircle, Maximize2, Minimize2, X } from 'lucide-react';
+import { Send, Bot, User, Lightbulb, HelpCircle, Maximize2, Minimize2, X, ExternalLink, Users, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import ragService from '../services/ragService';
 
 const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) => {
@@ -18,14 +19,15 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
   const [isResizing, setIsResizing] = useState(false);
   const messagesEndRef = useRef(null);
   const chatRef = useRef(null);
+  const navigate = useNavigate();
 
   const suggestions = [
+    "Show available tournaments",
     "How do I register a team?",
+    "Show my teams",
     "What is CricTourney?",
-    "How does payment work?",
-    "What are the user roles?",
-    "How to create a tournament?",
-    "Tell me about the architecture"
+    "View tournament schedule",
+    "How does payment work?"
   ];
 
   const scrollToBottom = () => {
@@ -87,7 +89,7 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
     setShowSuggestions(false);
 
     try {
-      const response = ragService.query(message);
+      const response = await ragService.query(message);
       
       const botMessage = {
         id: Date.now() + 1,
@@ -95,7 +97,11 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
         content: response.answer,
         sources: response.sources,
         timestamp: new Date(),
-        showSuggestions: true
+        showSuggestions: true,
+        interactive: response.interactive,
+        data: response.data,
+        dataType: response.type,
+        action: response.action
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -122,6 +128,131 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
 
   const formatTime = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleTournamentAction = (tournament, action) => {
+    if (action === 'register') {
+      navigate(`/register-team?tournamentId=${tournament.id}&fee=${tournament.entryFee}`);
+    } else if (action === 'view') {
+      window.location.href = `/tournament-details?tournamentId=${tournament.id}`;
+    } else if (action === 'schedule') {
+      navigate(`/view-schedule?tournamentId=${tournament.id}`);
+    }
+  };
+
+  const handleTeamAction = (team, action) => {
+    if (action === 'view') {
+      navigate(`/my-team/${team.id}`);
+    } else if (action === 'edit') {
+      navigate(`/edit-team/${team.id}`);
+    }
+  };
+
+  const renderInteractiveContent = (message) => {
+    if (!message.interactive) return null;
+    
+    // Handle redirect actions
+    if (message.action?.type === 'redirect') {
+      return (
+        <div className="mt-3">
+          <button
+            onClick={() => navigate(message.action.url)}
+            className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+          >
+            <ExternalLink size={14} />
+            Go to Payment History
+          </button>
+        </div>
+      );
+    }
+    
+    if (!message.data) return null;
+
+    if (message.dataType === 'tournaments') {
+      return (
+        <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+          {message.data.slice(0, 5).map((tournament) => (
+            <div key={tournament.id} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold text-sm text-gray-800">{tournament.name}</h4>
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">₹{tournament.entryFee}</span>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">
+                {tournament.city}, {tournament.state} • {tournament.teamLimit} teams
+              </p>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => handleTournamentAction(tournament, 'register')}
+                  className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                >
+                  <Users size={12} />
+                  Register
+                </button>
+                <button
+                  onClick={() => handleTournamentAction(tournament, 'view')}
+                  className="flex items-center gap-1 px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 transition-colors"
+                >
+                  <ExternalLink size={12} />
+                  View
+                </button>
+                <button
+                  onClick={() => handleTournamentAction(tournament, 'schedule')}
+                  className="flex items-center gap-1 px-2 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition-colors"
+                >
+                  <Calendar size={12} />
+                  Schedule
+                </button>
+              </div>
+            </div>
+          ))}
+          {message.data.length > 5 && (
+            <div className="text-xs text-gray-500 text-center py-2">
+              Showing 5 of {message.data.length} tournaments. Visit dashboard for more.
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (message.dataType === 'teams') {
+      return (
+        <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+          {message.data.slice(0, 5).map((team) => (
+            <div key={team.id} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold text-sm text-gray-800">{team.teamName}</h4>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">ID: {team.id}</span>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">
+                Captain: {team.captainName} • Players: {team.players?.length || 0}
+              </p>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => handleTeamAction(team, 'view')}
+                  className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                >
+                  <ExternalLink size={12} />
+                  View
+                </button>
+                <button
+                  onClick={() => handleTeamAction(team, 'edit')}
+                  className="flex items-center gap-1 px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 transition-colors"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))}
+          {message.data.length > 5 && (
+            <div className="text-xs text-gray-500 text-center py-2">
+              Showing 5 of {message.data.length} teams. Visit My Teams for more.
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -177,6 +308,7 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
                 {message.type === 'user' && <User size={16} className="mt-1 flex-shrink-0" />}
                 <div className="flex-1">
                   <p className="text-sm">{message.content}</p>
+                  {renderInteractiveContent(message)}
                   {message.sources && message.sources.length > 0 && (
                     <div className="mt-2 text-xs opacity-75">
                       <p className="font-semibold">Sources:</p>
@@ -191,7 +323,12 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
                     <div className="mt-3 space-y-1">
                       <div className="text-xs opacity-75 font-semibold">Ask more:</div>
                       <div className="grid grid-cols-1 gap-1">
-                        {suggestions.slice(0, 3).map((suggestion) => (
+                        {(message.interactive && message.dataType === 'tournaments' ? 
+                          ["Show my teams", "How to register a team?", "View tournament schedule"] :
+                          message.interactive && message.dataType === 'teams' ?
+                          ["Show available tournaments", "How to create a team?", "View payment history"] :
+                          suggestions.slice(0, 3)
+                        ).map((suggestion) => (
                           <button
                             key={suggestion}
                             onClick={() => handleSendMessage(suggestion)}
@@ -227,19 +364,38 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
 
         {/* Suggestions */}
         {showSuggestions && messages.length === 1 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Lightbulb size={16} />
-              <span>Try asking:</span>
+              <span>Quick Actions:</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => handleSendMessage('Show available tournaments')}
+                className="flex items-center gap-2 p-2 text-sm bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors"
+              >
+                <Users size={14} />
+                <span>View Tournaments</span>
+              </button>
+              <button
+                onClick={() => handleSendMessage('Show my teams')}
+                className="flex items-center gap-2 p-2 text-sm bg-green-50 hover:bg-green-100 rounded border border-green-200 transition-colors"
+              >
+                <ExternalLink size={14} />
+                <span>My Teams</span>
+              </button>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <HelpCircle size={16} />
+              <span>Or ask:</span>
             </div>
             <div className="grid grid-cols-1 gap-2">
-              {suggestions.map((suggestion) => (
+              {suggestions.slice(2).map((suggestion) => (
                 <button
                   key={suggestion}
                   onClick={() => handleSendMessage(suggestion)}
-                  className="text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors"
+                  className="text-left p-2 text-sm bg-gray-50 hover:bg-gray-100 rounded border border-gray-200 transition-colors"
                 >
-                  <HelpCircle size={14} className="inline mr-2" />
                   {suggestion}
                 </button>
               ))}
