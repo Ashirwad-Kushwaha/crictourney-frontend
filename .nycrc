@@ -1,7 +1,0 @@
-{
-  "exclude": [
-    "src/components/__tests__/**",
-    "src/**/*.test.js",
-    "src/**/*.test.jsx"
-  ]
-}

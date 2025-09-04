@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { teamApi } from "../services/api";
-import { Box, Typography, Paper, List, ListItem, ListItemText, CircularProgress } from "@mui/material";
+import { Box, Typography, Paper, CircularProgress } from "@mui/material";
 
 export default function ViewTeam() {
     const { teamId } = useParams();
@@ -32,17 +32,17 @@ export default function ViewTeam() {
                 <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>Created By: {team.createdBy}</Typography>
             </Paper>
             <Typography variant="subtitle2" mb={0.5} sx={{ fontWeight: 600, fontSize: '1rem' }}>Players</Typography>
-            <Paper sx={{ p: 1, borderRadius: 2, background: 'rgba(255,255,255,0.6)', boxShadow: 1, maxHeight: 320, overflowY: 'auto' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Paper sx={{ p: 1, borderRadius: 2, background: 'rgba(255,255,255,0.6)', boxShadow: 1 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
                     {players.map((player, idx) => (
-                        <Paper key={player.id || idx} sx={{ width: '100%', m: 0.5, p: 1, borderRadius: 1.5, background: 'rgba(255,255,255,0.85)', boxShadow: 0 }}>
-                            <Typography variant="subtitle2" fontWeight={600} color="primary" sx={{ fontSize: '1rem' }}>
+                        <Box key={player.id || idx} sx={{ p: 0.5, borderBottom: idx < players.length - 1 ? '1px solid rgba(0,0,0,0.1)' : 'none' }}>
+                            <Typography variant="subtitle2" fontWeight={600} color="primary" sx={{ fontSize: '0.85rem', mb: 0.2 }}>
                                 {player.name}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-                                Roles: {player.roles && player.roles.length > 0 ? player.roles.join(", ") : "-"}
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                                {player.roles && player.roles.length > 0 ? player.roles.join(", ") : "-"}
                             </Typography>
-                        </Paper>
+                        </Box>
                     ))}
                 </Box>
             </Paper>

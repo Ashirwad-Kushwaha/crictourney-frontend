@@ -1,8 +1,17 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import PropTypes from 'prop-types';
 import { Send, Bot, User, Lightbulb, HelpCircle, Maximize2, Minimize2, X, ExternalLink, Users, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ragService from '../services/ragService';
 
+/**
+ * RAGChat component for interactive chat interface
+ * @param {Object} props - Component props
+ * @param {Function} props.onMinimize - Function to minimize the chat
+ * @param {Function} props.onClose - Function to close the chat
+ * @param {boolean} props.showControls - Whether to show control buttons
+ * @param {Object} ref - React ref for imperative handle
+ */
 const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) => {
   const [messages, setMessages] = useState([
     {
@@ -128,6 +137,16 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
 
   const formatTime = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getSuggestionsForMessage = (message) => {
+    if (message.interactive && message.dataType === 'tournaments') {
+      return ["Show my teams", "How to register a team?", "View tournament schedule"];
+    }
+    if (message.interactive && message.dataType === 'teams') {
+      return ["Show available tournaments", "How to create a team?", "View payment history"];
+    }
+    return suggestions.slice(0, 3);
   };
 
   const handleTournamentAction = (tournament, action) => {
@@ -323,12 +342,7 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
                     <div className="mt-3 space-y-1">
                       <div className="text-xs opacity-75 font-semibold">Ask more:</div>
                       <div className="grid grid-cols-1 gap-1">
-                        {(message.interactive && message.dataType === 'tournaments' ? 
-                          ["Show my teams", "How to register a team?", "View tournament schedule"] :
-                          message.interactive && message.dataType === 'teams' ?
-                          ["Show available tournaments", "How to create a team?", "View payment history"] :
-                          suggestions.slice(0, 3)
-                        ).map((suggestion) => (
+                        {getSuggestionsForMessage(message).map((suggestion) => (
                           <button
                             key={suggestion}
                             onClick={() => handleSendMessage(suggestion)}
@@ -439,5 +453,14 @@ const RAGChat = forwardRef(({ onMinimize, onClose, showControls = false }, ref) 
     </div>
   );
 });
+
+
+
+// eslint-disable-next-line react/forbid-prop-types
+RAGChat.propTypes = {
+  onMinimize: PropTypes.func,
+  onClose: PropTypes.func,
+  showControls: PropTypes.bool
+};
 
 export default RAGChat;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, X, Minimize2, Maximize2 } from 'lucide-react';
+import { MessageCircle, X} from 'lucide-react';
 import RAGChat from './RAGChat';
 
 const RAGWidget = () => {

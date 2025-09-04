@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { teamApi } from "../services/api";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Box, Typography, Button, Paper, CircularProgress } from "@mui/material";
 
 const availableRoles = [
@@ -86,15 +86,15 @@ export default function EditTeam() {
 
     return (
         <Box sx={{ p: 4 }}>
-            <Toaster position="top-center" reverseOrder={false} />
             <Typography variant="h4" fontWeight={700} mb={3} color="primary">
                 Edit Team
             </Typography>
             <Paper sx={{ p: 3, maxHeight: 600, overflowY: 'auto', backgroundColor: 'rgba(255,255,255,0.85)' }}>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-700 font-bold mb-2">Team Name</label>
+                        <label htmlFor="teamName" className="block text-gray-700 font-bold mb-2">Team Name</label>
                         <input
+                            id="teamName"
                             type="text"
                             name="teamName"
                             value={form.teamName}
@@ -104,8 +104,9 @@ export default function EditTeam() {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 font-bold mb-2">Tournament ID</label>
+                        <label htmlFor="tournamentId" className="block text-gray-700 font-bold mb-2">Tournament ID</label>
                         <input
+                            id="tournamentId"
                             type="number"
                             name="tournamentId"
                             value={form.tournamentId}
@@ -117,7 +118,7 @@ export default function EditTeam() {
                     </div>
                     <Typography variant="h6" mb={1}>Players</Typography>
                     {form.players.map((player, index) => (
-                        <div key={index} className="mb-6">
+                        <div key={`player-${index}-${player.name || 'unnamed'}`} className="mb-6">
                             <input
                                 type="text"
                                 placeholder="Name"
@@ -146,13 +147,14 @@ export default function EditTeam() {
                             <div className="mt-2">
                                 <ul className="flex flex-wrap gap-2">
                                     {player.roles.map((role) => (
-                                        <li
+                                        <button
                                             key={role}
-                                            className="bg-blue-600 text-white px-3 py-1 rounded cursor-pointer"
+                                            type="button"
+                                            className="bg-blue-600 text-white px-3 py-1 rounded cursor-pointer hover:bg-blue-700 transition-colors"
                                             onClick={() => handleRemoveRole(index, role)}
                                         >
                                             {role} ✕
-                                        </li>
+                                        </button>
                                     ))}
                                 </ul>
                             </div>

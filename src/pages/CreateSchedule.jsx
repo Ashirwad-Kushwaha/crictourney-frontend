@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {schedulerApi} from "../services/api";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function CreateSchedule() {
+    const [searchParams] = useSearchParams();
     const [tournamentId, setTournamentId] = useState("");
     const [schedule, setSchedule] = useState([]);
+
+    useEffect(() => {
+        const paramTournamentId = searchParams.get("tournamentId");
+        if (paramTournamentId) {
+            setTournamentId(paramTournamentId);
+        }
+    }, [searchParams]);
 
     const handleCreateSchedule = async () => {
         try {
@@ -18,11 +27,11 @@ export default function CreateSchedule() {
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <Toaster position="top-center" reverseOrder={false} />
             <h2 className="text-3xl font-bold text-center mb-6 text-blue-700">Create Schedule</h2>
             <div className="bg-white p-6 shadow rounded">
-                <label className="block text-gray-700 font-bold mb-2">Tournament ID</label>
+                <label htmlFor="tournamentId" className="block text-gray-700 font-bold mb-2">Tournament ID</label>
                 <input
+                    id="tournamentId"
                     type="number"
                     value={tournamentId}
                     onChange={(e) => setTournamentId(e.target.value)}
