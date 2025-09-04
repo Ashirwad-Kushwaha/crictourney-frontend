@@ -87,6 +87,15 @@ export default function Navbar() {
                                                 <span>My Teams</span>
                                             </button>
                                             <button
+                                                onClick={() => { navigate("/my-tournaments"); setIsMenuOpen(false); }}
+                                                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 flex items-center space-x-2"
+                                            >
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                                </svg>
+                                                <span>My Tournaments</span>
+                                            </button>
+                                            <button
                                                 onClick={() => { navigate("/payment-history"); setIsMenuOpen(false); }}
                                                 className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 flex items-center space-x-2"
                                             >
@@ -138,6 +147,7 @@ export default function Navbar() {
                                 <>
                                     <div className="text-white py-2 border-b border-blue-600">Welcome, {user.username}</div>
                                     <button onClick={() => { navigate("/my-teams"); setIsMenuOpen(false); }} className="block text-white hover:text-orange-200 py-2 w-full text-left">My Teams</button>
+                                    <button onClick={() => { navigate("/my-tournaments"); setIsMenuOpen(false); }} className="block text-white hover:text-orange-200 py-2 w-full text-left">My Tournaments</button>
                                     <button onClick={() => { navigate("/payment-history"); setIsMenuOpen(false); }} className="block text-white hover:text-orange-200 py-2 w-full text-left">Payment History</button>
                                     <button onClick={logout} className="block text-red-300 hover:text-red-200 py-2 w-full text-left">Logout</button>
                                 </>

@@ -114,14 +114,16 @@ export default function TournamentDetails() {
                                 <div key={team.id} className="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg p-6 border border-blue-100">
                                     <h3 className="text-lg font-bold text-blue-800 mb-4">{team.teamName}</h3>
                                     <div className="space-y-2">
-                                        {team.players.map((player, index) => (
+                                        {team.players && team.players.length > 0 ? team.players.map((player, index) => (
                                             <div key={index} className="flex justify-between items-center py-2 border-b border-blue-100 last:border-b-0">
                                                 <span className="font-medium text-gray-800">{player.name}</span>
                                                 <span className="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                                                    {player.roles.join(", ")}
+                                                    {player.roles ? player.roles.join(", ") : "No roles"}
                                                 </span>
                                             </div>
-                                        ))}
+                                        )) : (
+                                            <p className="text-gray-500 text-center py-4">No players found</p>
+                                        )}
                                     </div>
                                 </div>
                             ))}

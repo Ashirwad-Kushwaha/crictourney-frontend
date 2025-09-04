@@ -17,6 +17,7 @@ import PaymentHistory from "./pages/PaymentHistory";
 import MyTeams from "./pages/MyTeams";
 import ViewTeam from "./pages/ViewTeam";
 import EditTeam from "./pages/EditTeam";
+import MyTournaments from "./pages/MyTournaments";
 
 function ProtectedRoute({ children, role }) {
     const user = getUser();
@@ -86,6 +87,7 @@ function App() {
                         <Route path="/tournament-details/:tournamentId" element={<ProtectedRoute><TournamentDetails /></ProtectedRoute>} />
                         <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
                         <Route path="/my-teams" element={<ProtectedRoute><MyTeams /></ProtectedRoute>} />
+                        <Route path="/my-tournaments" element={<ProtectedRoute><MyTournaments /></ProtectedRoute>} />
                         <Route path="/my-team/:teamId" element={<ProtectedRoute><ViewTeam /></ProtectedRoute>} />
                         <Route path="/edit-team/:teamId" element={<ProtectedRoute><EditTeam /></ProtectedRoute>} />
                         <Route path="/help" element={<HelpCenter />} />

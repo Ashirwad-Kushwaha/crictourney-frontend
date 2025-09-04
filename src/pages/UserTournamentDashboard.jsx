@@ -261,8 +261,12 @@ export default function UserTournamentDashboard() {
                                                 </div>
 
                                                 <div className="flex flex-wrap gap-2 mb-4">
-                                                    <span className="bg-sky-100 text-sky-800 text-xs font-medium px-2.5 py-1 rounded-full">
-                                                        {tournament.teamLimit} Teams
+                                                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                                                        tournament.teams?.length >= tournament.teamLimit 
+                                                            ? 'bg-red-100 text-red-800' 
+                                                            : 'bg-sky-100 text-sky-800'
+                                                    }`}>
+                                                        {tournament.teams?.length || 0}/{tournament.teamLimit} Teams
                                                     </span>
                                                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
                                                         ₹{tournament.entryFee}
@@ -270,6 +274,12 @@ export default function UserTournamentDashboard() {
                                                 </div>
 
                                                 <div className="space-y-2 text-sm text-gray-600 mb-6">
+                                                    <div className="flex items-center">
+                                                        <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                                        </svg>
+                                                        <span><strong>Start Date:</strong> {new Date(tournament.startingDate).toLocaleDateString()}</span>
+                                                    </div>
                                                     <div className="flex items-center">
                                                         <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -284,34 +294,61 @@ export default function UserTournamentDashboard() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex flex-wrap gap-2">
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleRegisterClick(tournament.id, tournament.entryFee); }}
-                                                        className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-sm flex items-center justify-center space-x-1"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.996 2.996 0 0 0 17.06 7H16c-.8 0-1.54.37-2.01.99L12 10l-1.99-2.01A2.99 2.99 0 0 0 8 7H6.94c-1.4 0-2.59.93-2.9 2.37L1.5 16H4v6h2v-6h2.5l1.5-4.5L12 14l2-2.5L15.5 16H18v6h2z"/>
-                                                        </svg>
-                                                        <span>Register</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleRegisterWithExistingTeam(tournament); }}
-                                                        className="flex-1 border border-blue-600 text-blue-700 hover:bg-blue-50 font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-sm flex items-center justify-center space-x-1"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                                        </svg>
-                                                        <span>Use Team</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleViewScheduleClick(tournament.id); }}
-                                                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-sm flex items-center justify-center"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
+                                                {(() => {
+                                                    const today = new Date();
+                                                    const startDate = new Date(tournament.startingDate);
+                                                    const daysDiff = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
+                                                    const isFull = tournament.teams?.length >= tournament.teamLimit;
+                                                    const canRegister = daysDiff >= 2 && !isFull;
+                                                    
+                                                    return (
+                                                        <div className="space-y-3">
+                                                            {!canRegister && (
+                                                                <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+                                                                    {isFull ? 'Tournament is full!' : `Registration closed - Tournament starts in ${daysDiff} day${daysDiff !== 1 ? 's' : ''}`}
+                                                                </div>
+                                                            )}
+                                                            <div className="flex flex-wrap gap-2">
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleRegisterClick(tournament.id, tournament.entryFee); }}
+                                                                    disabled={!canRegister}
+                                                                    className={`flex-1 font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-sm flex items-center justify-center space-x-1 ${
+                                                                        canRegister 
+                                                                            ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white' 
+                                                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                                    }`}
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                                        <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.996 2.996 0 0 0 17.06 7H16c-.8 0-1.54.37-2.01.99L12 10l-1.99-2.01A2.99 2.99 0 0 0 8 7H6.94c-1.4 0-2.59.93-2.9 2.37L1.5 16H4v6h2v-6h2.5l1.5-4.5L12 14l2-2.5L15.5 16H18v6h2z"/>
+                                                                    </svg>
+                                                                    <span>Register</span>
+                                                                </button>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleRegisterWithExistingTeam(tournament); }}
+                                                                    disabled={!canRegister}
+                                                                    className={`flex-1 font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-sm flex items-center justify-center space-x-1 ${
+                                                                        canRegister 
+                                                                            ? 'border border-blue-600 text-blue-700 hover:bg-blue-50' 
+                                                                            : 'border border-gray-300 text-gray-500 cursor-not-allowed'
+                                                                    }`}
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                                                    </svg>
+                                                                    <span>Use Team</span>
+                                                                </button>
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); handleViewScheduleClick(tournament.id); }}
+                                                                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-200 text-sm flex items-center justify-center"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
                                     ))}

@@ -8,10 +8,12 @@ import toast from "react-hot-toast";
 
 export default function AdminTournamentDashboard() {
     const [tournaments, setTournaments] = useState([]);
+    const [editingTournament, setEditingTournament] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         teamLimit: "",
         entryFee: "",
+        startingDate: "",
         venue: "",
         street: "",
         state: "",
@@ -81,12 +83,19 @@ export default function AdminTournamentDashboard() {
         setIsLoading(true);
         
         try {
-            await tournamentApi.post("/tournament/create", formData);
-            toast.success("Tournament created successfully!");
+            if (editingTournament) {
+                await tournamentApi.put(`/tournament/update/${editingTournament.id}`, formData);
+                toast.success("Tournament updated successfully!");
+                setEditingTournament(null);
+            } else {
+                await tournamentApi.post("/tournament/create", formData);
+                toast.success("Tournament created successfully!");
+            }
             setFormData({
                 name: "",
                 teamLimit: "",
                 entryFee: "",
+                startingDate: "",
                 venue: "",
                 street: "",
                 state: "",
@@ -96,10 +105,42 @@ export default function AdminTournamentDashboard() {
             });
             fetchTournaments();
         } catch (err) {
-            toast.error(err.response?.data || "Failed to create tournament");
+            toast.error(err.response?.data || "Failed to save tournament");
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleEditTournament = (tournament) => {
+        setEditingTournament(tournament);
+        setFormData({
+            name: tournament.name,
+            teamLimit: tournament.teamLimit,
+            entryFee: tournament.entryFee,
+            startingDate: tournament.startingDate,
+            venue: tournament.venue,
+            street: tournament.street,
+            state: tournament.state,
+            district: tournament.district,
+            city: tournament.city,
+            pincode: tournament.pincode
+        });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingTournament(null);
+        setFormData({
+            name: "",
+            teamLimit: "",
+            entryFee: "",
+            startingDate: "",
+            venue: "",
+            street: "",
+            state: "",
+            district: "",
+            city: "",
+            pincode: ""
+        });
     };
 
     const handleTournamentClick = (tournament) => {
@@ -119,7 +160,7 @@ export default function AdminTournamentDashboard() {
                                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                                     </svg>
                                 </div>
-                                <h2 className="text-xl font-bold text-blue-800">Create Tournament</h2>
+                                <h2 className="text-xl font-bold text-blue-800">{editingTournament ? 'Edit Tournament' : 'Create Tournament'}</h2>
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -152,6 +193,15 @@ export default function AdminTournamentDashboard() {
                                         required
                                     />
                                 </div>
+
+                                <input
+                                    name="startingDate"
+                                    type="date"
+                                    value={formData.startingDate}
+                                    onChange={handleInputChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required
+                                />
 
                                 <input
                                     name="venue"
@@ -207,13 +257,24 @@ export default function AdminTournamentDashboard() {
                                     />
                                 </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50"
-                                >
-                                    {isLoading ? "Creating..." : "Create Tournament"}
-                                </button>
+                                <div className="space-y-3">
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50"
+                                    >
+                                        {isLoading ? (editingTournament ? "Updating..." : "Creating...") : (editingTournament ? "Update Tournament" : "Create Tournament")}
+                                    </button>
+                                    {editingTournament && (
+                                        <button
+                                            type="button"
+                                            onClick={handleCancelEdit}
+                                            className="w-full border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                                        >
+                                            Cancel Edit
+                                        </button>
+                                    )}
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -270,6 +331,12 @@ export default function AdminTournamentDashboard() {
                                                 <div className="space-y-2 text-sm text-gray-600 mb-4">
                                                     <div className="flex items-center">
                                                         <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                                        </svg>
+                                                        <span><strong>Start Date:</strong> {new Date(tournament.startingDate).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <svg className="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                                         </svg>
                                                         <span><strong>Venue:</strong> {tournament.venue}</span>
@@ -283,6 +350,12 @@ export default function AdminTournamentDashboard() {
                                                 </div>
 
                                                 <div className="flex flex-wrap gap-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleEditTournament(tournament); }}
+                                                        className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
+                                                    >
+                                                        Edit
+                                                    </button>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); navigate(`/register-team?tournamentId=${tournament.id}&fee=${tournament.entryFee}`); }}
                                                         className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
